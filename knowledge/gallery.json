@@ -1,0 +1,98 @@
+[
+  {
+    "id": "F01",
+    "label": "Leucoplasia Oral",
+    "url": "/static/images/figure-01.jpeg",
+    "ai_generated": true
+  },
+  {
+    "id": "F02",
+    "label": "Leucoplasia Verrucosa Proliferativa em borda de língua",
+    "url": "/static/images/figure-02.jpeg",
+    "ai_generated": true
+  },
+  {
+    "id": "F03",
+    "label": "Leucoplasia Verrucosa Proliferativa",
+    "url": "/static/images/figure-03.jpeg",
+    "ai_generated": true
+  },
+  {
+    "id": "F04",
+    "label": "Líquen plano",
+    "url": "/static/images/figure-04.jpeg",
+    "ai_generated": true
+  },
+  {
+    "id": "F05",
+    "label": "Líquen plano generalizado",
+    "url": "/static/images/figure-05.jpeg",
+    "ai_generated": true
+  },
+  {
+    "id": "F06",
+    "label": "Eritroplasia Oral",
+    "url": "/static/images/figure-06.jpeg",
+    "ai_generated": true
+  },
+  {
+    "id": "F07",
+    "label": "Eritroleucoplasia Oral",
+    "url": "/static/images/figure-07.jpeg",
+    "ai_generated": true
+  },
+  {
+    "id": "F08",
+    "label": "Lesões palatais associadas ao fumo reverso 1",
+    "url": "/static/images/figure-08.jpeg",
+    "ai_generated": true
+  },
+  {
+    "id": "F09",
+    "label": "Lesões palatais associadas ao fumo reverso 2",
+    "url": "/static/images/figure-09.jpeg",
+    "ai_generated": true
+  },
+  {
+    "id": "F10",
+    "label": "Fibrose submucosa oral",
+    "url": "/static/images/figure-10.jpeg",
+    "ai_generated": true
+  },
+  {
+    "id": "F11",
+    "label": "Fibrose submucosa oral severa",
+    "url": "/static/images/figure-11.jpeg",
+    "ai_generated": true
+  },
+  {
+    "id": "F12",
+    "label": "Lesão suspeita de carcinoma espinocelular oral",
+    "url": "/static/images/figure-12.jpeg",
+    "ai_generated": true
+  },
+  {
+    "id": "F13",
+    "label": "Lúpus Oral Eritematoso 1",
+    "url": "/static/images/figure-13.jpeg",
+    "ai_generated": true
+  },
+  {
+    "id": "F14",
+    "label": "Lúpus Oral Eritematoso 2",
+    "url": "/static/images/figure-14.jpeg",
+    "ai_generated": true
+  },
+  {
+    "id": "F15",
+    "label": "Queilite Actínica",
+    "url": "/static/images/figure-15.jpeg",
+    "ai_generated": true
+  },
+  {
+    "id": "F16",
+    "label": "Queilite Actínica Ulcerada",
+    "url": "/static/images/figure-16.jpeg",
+    "ai_generated": true
+  }
+]

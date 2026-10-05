@@ -1,0 +1,1 @@
+Rules supplied by project owner; closing phrase completed with cavidade oral. Diagnostic objectives are superseded by the non-diagnostic scope in system.txt. References are bibliographic only; article full texts are not ingested. All gallery images are AI-generated illustrations.

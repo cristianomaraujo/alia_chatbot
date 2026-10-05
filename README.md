@@ -27,7 +27,7 @@ Open http://127.0.0.1:8000. In development, encrypted SQLite data and an automat
 
 ## Railway
 
-1. Create a private GitHub repository named `alia` and upload this project.
+1. Use this GitHub repository: `cristianomaraujo/alia_chatbot`.
 2. Create a Railway project from the repository. Dockerfile and `railway.json` configure the process and `/health`.
 3. Add a persistent volume mounted at `/data`. Keep one service instance and one worker for the SQLite prototype.
 4. Set `APP_ENV=production`, `DATA_DIR=/data`, `OPENAI_API_KEY`, `OPENAI_MODEL`, a strong `REGISTRATION_CODE`, and `CASE_ENCRYPTION_KEY`.
@@ -54,4 +54,4 @@ Clinical rules mention concepts that may require additional source clarification
 
 Before use with identifiable clinical records, the operator needs to define jurisdiction-specific data handling, retention, backups and account administration. The current application intentionally asks for case codes and excludes patient identity fields from the API.
 
-Visual previews with synthetic content are in `docs/preview/`. The invitation gate, encryption key, public origin and API key must be configured by the operator. GitHub repository creation and Railway deployment are separate from the local implementation delivered here.
+Visual previews with synthetic content are in `docs/preview/`. The invitation gate, encryption key, public origin and API key must be configured by the operator. Railway deployment remains a separate configuration step.
