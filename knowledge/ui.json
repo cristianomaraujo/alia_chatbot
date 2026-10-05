@@ -167,5 +167,9 @@
   "summary_request": "Sintetize os achados registrados.",
   "review_request_hint": "após a correção, peça uma nova síntese na conversa.",
   "not_applicable_findings": "Não aplicáveis",
-  "refresh_record": "Atualizar ficha"
+  "refresh_record": "Atualizar ficha",
+  "describe_guidance": "Como descrever este achado",
+  "applied_rule": "Regra clínica aplicada — paráfrase da literatura",
+  "pdf_pages": "Páginas do PDF",
+  "stale_assessment": "Esta síntese usa uma versão anterior da base. Solicite uma nova síntese antes de preparar o encaminhamento."
 }

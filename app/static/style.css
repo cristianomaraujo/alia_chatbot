@@ -29,3 +29,5 @@ html[dir=rtl] .sidebar{left:auto;right:0}html[dir=rtl] main{margin-left:0;margin
 .case-tools{flex-wrap:wrap}.case-tools .case-guide{flex:1 1 360px}.case-tools #summarizeCase{font-size:11px;padding:10px 13px}.fact-title>small{min-width:0}.fact .state-badge{max-width:120px;white-space:normal;flex-shrink:0}.provenance details p{border-top:1px solid #e0e8e2;padding-top:10px}.record-stats small{overflow-wrap:anywhere}@media(max-width:650px){.case-tools .case-guide{flex-basis:100%;max-width:none}.case-tools #exportResearch{max-width:none}.case-tools #summarizeCase{margin-right:auto}.fact .state-badge{max-width:108px}}
 
 .record-stats.four-stats{grid-template-columns:repeat(2,1fr)}
+
+.question-guide{margin:0 20px 12px;padding:12px 16px;border:1px solid var(--line,#dce7e6);border-radius:12px;background:#f4f8f7}.question-guide summary{cursor:pointer;font-size:.88rem;font-weight:600}.question-guide p,.field-guidance{font-size:.88rem;line-height:1.65;color:#536766}.summary-panel details a{display:block;margin:10px 0;font-size:.82rem;overflow-wrap:anywhere}.stale-notice{border-left:3px solid #b78132;padding:12px;background:#fff8eb}

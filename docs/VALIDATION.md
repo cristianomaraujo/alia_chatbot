@@ -29,3 +29,10 @@ Structured record update: 42 simulated-model API tests passed. Regressions cover
 Checked attention explanations are reused only while their supporting evidence is unchanged, avoiding repeated verification calls for unchanged owner criteria.
 
 The browser also verified recovery from a stale case version with the message draft preserved. Repeated model contexts omit full original-message metadata, audit history and review identity while retaining field states and exact excerpts.
+
+
+## Evidence revision — 2026-10-05
+
+The runtime now uses `knowledge/clinical_rules.json`, reconciled from the nine supplied articles, rather than the historical owner source. Each paraphrased rule records PDF pages, scope and limitations. The original source remains unchanged. Only four descriptive patterns are registered; prerequisites and semantic model consistency checks apply. Screening schedules are excluded from symptomatic lesion waiting rules. Lichenoid context is conditional; one principal lesion remains the unit of a case. Older syntheses require regeneration before review and referral.
+
+Automated tests use mocked model responses and establish software behavior only. They do not establish diagnostic accuracy, clinical safety, cross-language equivalence or guideline validity. The consistency verifier uses the same model family and is not independent clinical validation. No full-text copyrighted papers are distributed.

@@ -103,7 +103,7 @@ def test_catalog_provenance():
  assert len(data['gallery'])==16 and len(data['references'])==9
  assert all(x['ai_generated'] for x in data['gallery'])
  assert 'confirm the nature of an alteration' in main.RULES.lower()
- assert 'neoplasias da cavidade oral.' in main.RULES
+ assert len(data['evidence']['references'])==9 and data['build']['clinical_rules_version']=='alia-evidence-1.0'
  assert len({k for k,_,_ in FIELDS})==len(FIELDS)
 
 def test_translation_failure_not_partial(client,monkeypatch):
@@ -252,8 +252,8 @@ def test_cancel_location_still_offers_referral(client,monkeypatch):
 
 def test_compatibility_requires_source_and_stated_support(client,monkeypatch):
  case=complete_case(client)
- case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{'color':'Branca'}}).json()
- candidate={'label':'lesões brancas','reason':'Coloração branca informada; demais dados limitados.','supporting_keys':['color'],'basis_excerpt':'Dê atenção especial a lesões brancas, vermelhas ou vermelho-brancas'}
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{'color':'Branca','scraping':'Não removível à raspagem'}}).json()
+ candidate={'pattern_id':'white_nonremovable','label':main.PATTERN_BY_ID['white_nonremovable']['label'],'reason':'Coloração branca não removível informada.','supporting_keys':['color','scraping'],'basis_excerpt':main.RULE_BY_ID['white_pattern']['text']}
  mock_reply(monkeypatch,assessment_status='compatible',possibilities=[candidate])
  case=conversation(client,case,'Sintetize')
  assert case['assessment']['status']=='compatible' and 'podem ser compatíveis' in case['assessment']['text']
@@ -450,3 +450,82 @@ def test_attention_verification_is_reused_only_for_unchanged_evidence(client,mon
  case=conversation(client,case,'Continuar')
  assert calls==['collect','verify','collect']
  assert case['safety_flags']
+
+
+def test_conditional_fields_and_guidance(client):
+ case=client.get('/api/cases/'+new(client)['id']).json()
+ assert 'clinical_suspicion' in case['active_fields']
+ assert 'reticular_pattern' not in case['active_fields']
+ assert 'cancer_therapy' not in case['active_fields']
+ assert main.BY_KEY['size']['guidance']
+ assert 'distribution' in main.active_keys({},['lichenoid'])
+
+def test_registry_rejects_missing_prerequisites():
+ pattern=main.PATTERN_BY_ID['white_nonremovable']
+ item=main.Compatibility(pattern_id=pattern['id'],label=pattern['label'],reason='white',supporting_keys=['color'],basis_excerpt=main.RULE_BY_ID[pattern['rule']]['text'])
+ case={'facts':{'color':'white'},'fact_meta':{'color':{'state':'reported'}}}
+ assert main.pattern_candidate(item,case) is None
+ item.pattern_id='invented'
+ assert main.pattern_candidate(item,case) is None
+
+def test_old_evidence_blocks_referral(client):
+ case=new(client)
+ case['assessment']={'text':'Old synthesis','build':{}}
+ case['flow']={'referral_ready':True,'stage':'done'}
+ main.save_case(case,_case_owner(case['id']),case['version'])
+ read=client.get('/api/cases/'+case['id']).json()
+ assert read['assessment_stale']
+ assert client.post('/api/cases/'+case['id']+'/review',json={'version':read['version'],'confirmed':True}).status_code==409
+ assert client.post('/api/cases/'+case['id']+'/referral-data').status_code==409
+
+def _case_owner(case_id):
+ with main.db() as c:return c.execute('SELECT user_id FROM cases WHERE id=?',(case_id,)).fetchone()['user_id']
+
+def test_lichenoid_context_requires_recorded_update(client,monkeypatch):
+ case=new(client)
+ mock_reply(monkeypatch,lichenoid_context=True)
+ case=conversation(client,case,'Não entendi')
+ assert 'lichenoid' not in case['contexts']
+ mock_reply(monkeypatch,lichenoid_context=True,updates=[{'key':'reticular_pattern','value':'Estrias brancas entrelaçadas','source_excerpt':'Estrias brancas entrelaçadas'}])
+ case=conversation(client,case,'Estrias brancas entrelaçadas')
+ assert 'lichenoid' in case['contexts'] and 'contact_relation' in case['active_fields']
+
+def test_referral_is_independent_of_matching_pattern(client,monkeypatch):
+ case=new(client)
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{'clinical_suspicion':'Considero clinicamente suspeita'}}).json()
+ async def fake(messages,schema):
+  task=json.loads(messages[-1]['content'])['task']
+  if task=='verify':return {'referral_supported':True,'narrative_supported':False}
+  return {'updates':[],'explanation':'','action':'summarize','assessment_status':'no_match','referral_rule':'suspicious_referral'}
+ monkeypatch.setattr(main,'model',fake)
+ case=conversation(client,case,'Sintetize')
+ assert case['assessment']['status']=='no_match'
+ assert case['assessment']['referral_rule']['rule_id']=='suspicious_referral'
+ assert 'encaminhamento imediato' in case['assessment']['text']
+ assert case['assessment']['referral_rule']['sources']
+
+def test_unassessed_suspicion_cannot_support_referral(client,monkeypatch):
+ case=new(client)
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{'clinical_suspicion':'Não avaliado'},'metadata':{'clinical_suspicion':{'state':'not_assessed'}}}).json()
+ async def fake(messages,schema):
+  data=json.loads(messages[-1]['content'])
+  if data['task']=='verify':
+   assert data['referral_rule']=='none'
+   return {'referral_supported':True}
+  return {'updates':[],'explanation':'','action':'summarize','assessment_status':'insufficient','referral_rule':'suspicious_referral'}
+ monkeypatch.setattr(main,'model',fake)
+ case=conversation(client,case,'Sintetize')
+ assert case['assessment']['referral_rule'] is None
+
+def test_semantic_verifier_can_reject_structural_match(client,monkeypatch):
+ case=new(client)
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{'color':'Branca','scraping':'Removível à raspagem'}}).json()
+ pattern=main.PATTERN_BY_ID['white_nonremovable']
+ candidate={'pattern_id':pattern['id'],'label':pattern['label'],'basis_excerpt':main.RULE_BY_ID[pattern['rule']]['text'],'supporting_keys':['color','scraping'],'reason':'Unsupported non-removability'}
+ async def fake(messages,schema):
+  data=json.loads(messages[-1]['content'])
+  if data['task']=='verify':return {'valid_indices':[]}
+  return {'updates':[],'explanation':'','action':'summarize','assessment_status':'compatible','possibilities':[candidate]}
+ monkeypatch.setattr(main,'model',fake)
+ case=conversation(client,case,'Sintetize')
+ assert case['assessment']['status']=='validation_failed' and not case['assessment']['possibilities']
