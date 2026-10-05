@@ -5,10 +5,10 @@ Assessment of Lesions with Intelligent Assistance. Text-only AI support for coll
 ## Features
 
 - Email/password accounts, invite registration in production, eight-hour sessions and per-user case access.
-- Encrypted saved cases, sequential questions, explicit unknown values, editable findings and resumption.
+- Encrypted saved cases, one lesion per case, guided collection or a described case with guidance, field states, original-message provenance, explicit contradiction resolution, editable findings and resumption.
 - Language-name selector; automatic UI and conversation translations. Language availability does not imply validated clinical performance.
 - Sixteen supplied AI-generated illustrations, optionally consulted by the professional. A separate consultation page displays the illustrations without selection or a triage step. No photo upload or image analysis. Illustration labels are never used as patient findings.
-- Reviewed referral printable from the browser or saved using the browser's PDF option. Offered after the conversational synthesis and enabled after acceptance. Optional international registration field; patient identification stays in the referral form and is not transmitted to the API/model.
+- Reviewed referral printable from the browser or saved using the browser's PDF option. Offered after the conversational synthesis and optional services search, with professional review required before the document opens. Optional international registration field; patient identification stays in the referral form and is not transmitted to the API/model.
 - External Google Maps search using city, country and specialty only. Offered within the conversation before the referral offer, with city and country collected separately after consent. No provider database, endorsement or validation of search results.
 
 ## Public demonstration
@@ -17,7 +17,7 @@ The login page offers three fictional case starting points without registration.
 
 Guest case payloads are held only in process memory, are inaccessible after one hour, logout or restart, and are never written to the case database. Each session allows two cases and 45 model-consuming operations. Starting sessions and model operations also have shared and per-address limits. These limits reduce API use but are not a billing cap; configure account spending controls separately. Login and invite registration remain available for permanent saved cases.
 
-The full AI scope notice appears in the opening conversation message and platform; it is not appended to the referral document. Compatibility candidates require a source label and exact excerpt present in the owner rules plus explicitly recorded supporting fields. Missing source support yields no correspondence; insufficient findings yield an explicit limitation. This provenance check does not establish clinical validity. Corrected findings invalidate the prior synthesis and enabled referral. It is not automatically repeated at phase transitions or gallery completion.
+The full AI scope notice appears in the opening conversation message and platform; it is not appended to the referral document. Collection, synthesis and consistency verification run as separate steps. Compatibility candidates require a source label, exact excerpt from the runtime clinical source, positively recorded supporting fields and a separate model consistency check. This is not independent clinical validation. Missing source support yields no correspondence; insufficient findings yield an explicit limitation. This provenance check does not establish clinical validity. Corrected findings invalidate the prior synthesis and enabled referral. It is not automatically repeated at phase transitions or gallery completion.
 
 ## Local startup
 
@@ -63,3 +63,15 @@ Clinical rules mention concepts that may require additional source clarification
 Before use with identifiable clinical records, the operator needs to define jurisdiction-specific data handling, retention, backups and account administration. The current application intentionally asks for case codes and excludes patient identity fields from the API.
 
 Visual previews with synthetic content are in `docs/preview/`. The invitation gate, encryption key, public origin and API key must be configured by the operator. Railway deployment remains a separate configuration step.
+
+## Structured record and evaluation export
+
+The conversation is supplied by the professional. Patient attribution requires an explicit patient report; examination attribution requires an explicit examination. Field states are reported, absent, unknown, not assessed or not applicable; an unrecorded field remains distinct. Original messages and exact excerpts, field changes and confirmations are retained in the encrypted case payload. Different values for established findings require explicit correction or confirmation in the record panel. Literal mm/cm rewrites are checked for equivalent measurements.
+
+Legacy cases receive missing metadata on access and display unspecified provenance rather than fabricated attribution. The original message cannot be reconstructed for a legacy field. Editing or changed findings invalidate the synthesis and professional review. A server-checked review fingerprint gates referral export; print checks the current case version again.
+
+The clinical source and bibliography files remain unchanged. The runtime source excludes the original opening operational instructions and the obsolete illustration-selection block; interview fields preserve the initial sex/age collection. Current workflow instructions are consolidated in knowledge/system.txt. No new clinical criteria, urgency scores or disease catalog were added. Attention criteria are literal excerpts of the owner source and require positively recorded prerequisite fields plus a consistency check.
+
+Evaluation export is an authenticated, owner-scoped JSON download containing conversation, structured record, changes, model execution metadata and pipeline/source/code/interface fingerprints. Provider model IDs and usage are captured when real calls run; simulated calls have no provider telemetry. Referral identities entered only in the browser are not part of this export. Free text must be reviewed and deidentified before sharing.
+
+Final synthesis uses additional model calls and may increase latency and cost. Demonstration budgets count those calls. Automated source consistency checks reduce some errors but do not establish correctness, clinical safety or language equivalence. There is no claim of live-model or clinical validation.
