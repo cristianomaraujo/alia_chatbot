@@ -603,3 +603,17 @@ def test_uncertain_or_complex_medication_answer_requires_extraction(answer):
 def test_unknown_and_not_assessed_remain_different_from_none():
  for answer,state in [('Nenhum','absent'),('Não informado','unknown'),('Não avaliado','not_assessed')]:
   assert main.direct_answer({'pending':'medications'},answer)['updates'][0]['state']==state
+
+def test_guest_access_needs_no_example_and_does_not_save_history():
+ c=TestClient(main.app)
+ response=c.post('/api/demo/start',json={})
+ assert response.status_code==200
+ c.headers['X-CSRF-Token']=response.json()['csrf']
+ case=new(c)
+ assert case['demo'] and case['example'] is None
+ assert case['facts']=={} and case['pending']=='sex'
+ assert c.get('/api/cases').json()==[]
+ with main.db() as db:
+  assert db.execute('SELECT count(*) FROM cases WHERE id=?',(case['id'],)).fetchone()[0]==0
+ c.post('/api/logout')
+ assert c.get('/api/cases/'+case['id']).status_code==401

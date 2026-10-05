@@ -87,12 +87,10 @@
   "default_reason": "Solicito avaliação em Estomatologia/Medicina Oral dos achados descritos.",
   "have_account": "Já tenho conta",
   "refresh_case": "A ficha foi atualizada. Reabra e revise o documento antes de imprimir.",
-  "demo_start": "Experimentar com um caso fictício",
-  "demo_notice": "Demonstração — caso fictício, sem validade clínica",
-  "demo_hint": "Use somente dados fictícios. Sessão temporária de até uma hora, sem salvar casos permanentemente. As respostas são geradas pelo mesmo modelo e regras da plataforma.",
-  "demo_choose": "Escolha um caso fictício",
-  "demo_choose_hint": "O exemplo fornece informações para você responder à conversa; os achados não são preenchidos automaticamente.",
-  "demo_exit": "Encerrar demonstração",
+  "demo_start": "Utilizar sem login",
+  "demo_notice": "Uso sem login — sessão temporária",
+  "demo_hint": "Os casos e o histórico não ficam salvos para acesso posterior. A sessão expira em até uma hora; ao encerrá-la, seu conteúdo é descartado. Para testes, utilize dados fictícios e não informe nomes ou documentos.",
+  "demo_exit": "Encerrar sessão sem login",
   "skip_figure": "Pular esta etapa",
   "gallery_optional": "Consulta opcional: você pode pular esta etapa ou continuar a conversa sem escolher uma figura.",
   "compatibility_summary": "Síntese dos achados para revisão profissional",
@@ -173,5 +171,7 @@
   "pdf_pages": "Páginas do PDF",
   "stale_assessment": "Esta síntese usa uma versão anterior da base. Solicite uma nova síntese antes de preparar o encaminhamento.",
   "request_timeout": "A resposta demorou além do esperado. Atualize a ficha para conferir se o envio foi salvo antes de tentar novamente.",
-  "connection_failed": "Não foi possível confirmar o envio. Sua resposta permanece no campo. Atualize a ficha antes de tentar novamente."
+  "connection_failed": "Não foi possível confirmar o envio. Sua resposta permanece no campo. Atualize a ficha antes de tentar novamente.",
+  "guest_history_hint": "Os casos e o histórico da conversa não serão salvos na sua conta. Sessão temporária de até uma hora. Para testes, utilize dados fictícios.",
+  "guest_name": "Sem login"
 }

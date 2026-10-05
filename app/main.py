@@ -130,19 +130,19 @@ def logout(request:Request,response:Response):
         with db() as c:c.execute('DELETE FROM sessions WHERE token=?',(s['token'],))
     response.delete_cookie('alia_session');return {'ok':True}
 class DemoStart(BaseModel):
-    scenario:str
+    scenario:str|None=None
 @app.get('/api/demo/scenarios')
 def demo_scenarios():return [{'id':x['id'],'title':x['title']} for x in DEMO_SCENARIOS]
 @app.post('/api/demo/start')
 def demo_start(data:DemoStart,request:Request,response:Response):
     limit(request,'demo-start',5);limit(request,'demo-global-start',40)
     scenario=next((x for x in DEMO_SCENARIOS if x['id']==data.scenario),None)
-    if not scenario:raise HTTPException(422,'Exemplo inválido.')
+    if data.scenario is not None and not scenario:raise HTTPException(422,'Exemplo inválido.')
     for token,old in list(DEMO_SESSIONS.items()):
         if old['expires']<=time.time():DEMO_SESSIONS.pop(token,None)
     if len(DEMO_SESSIONS)>=128:raise HTTPException(429,'Demonstração ocupada. Tente mais tarde.')
     token=secrets.token_urlsafe(32);digest=hashed(token)
-    demo={'token':digest,'user_id':'demo:'+digest,'csrf':secrets.token_urlsafe(32),'expires':time.time()+3600,'name':'Demonstração','demo':True,'calls':0,'cases':{},'scenario':scenario}
+    demo={'token':digest,'user_id':'demo:'+digest,'csrf':secrets.token_urlsafe(32),'expires':time.time()+3600,'name':'Sem login','demo':True,'calls':0,'cases':{},'scenario':scenario}
     DEMO_SESSIONS[digest]=demo
     response.set_cookie('alia_session',token,httponly=True,secure=PRODUCTION,samesite='strict',max_age=3600)
     return {'name':demo['name'],'csrf':demo['csrf'],'demo':True}

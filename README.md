@@ -11,9 +11,9 @@ Assessment of Lesions with Intelligent Assistance. Text-only AI support for coll
 - Reviewed referral printable from the browser or saved using the browser's PDF option. Offered after the conversational synthesis and optional services search, with professional review required before the document opens. Optional international registration field; patient identification stays in the referral form and is not transmitted to the API/model.
 - External Google Maps search using city, country and specialty only. Offered within the conversation before the referral offer, with city and country collected separately after consent. No provider database, endorsement or validation of search results.
 
-## Public demonstration
+## Use without login
 
-The login page offers three fictional case starting points without registration. Demonstration conversations use the same model and clinical rules as registered cases. Findings are entered by the visitor, not prefilled from the example. Referral exports carry a demonstration watermark.
+The login page offers direct access without registration or mandatory example selection. This opens a blank triage using the same model and clinical rules as registered cases. Visible notices explain that cases and conversation history are not saved to an account or available in persistent history. Users are advised to use fictional, non-identifying data for testing. Referral exports identify the temporary no-login session. The optional scenario API remains backward-compatible, but the public entry does not select a scenario.
 
 Guest case payloads are held only in process memory, are inaccessible after one hour, logout or restart, and are never written to the case database. Each session allows two cases and 45 model-consuming operations. Starting sessions and model operations also have shared and per-address limits. These limits reduce API use but are not a billing cap; configure account spending controls separately. Login and invite registration remain available for permanent saved cases.
 
