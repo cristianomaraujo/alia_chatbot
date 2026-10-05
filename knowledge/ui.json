@@ -97,5 +97,11 @@
   "gallery_optional": "Consulta opcional: você pode pular esta etapa ou continuar a conversa sem escolher uma figura.",
   "compatibility_summary": "Síntese dos achados para revisão profissional",
   "maps_button": "Consultar serviços no Google Maps",
-  "review_request": "Revise os achados na conversa para atualizar a síntese."
+  "review_request": "Revise os achados na conversa para atualizar a síntese.",
+  "illustrations": "Ilustrações",
+  "illustrations_intro": "Material visual de consulta. Não é necessário selecionar uma figura para realizar a triagem.",
+  "step_collect": "Coleta",
+  "step_summary": "Síntese",
+  "step_services": "Serviços",
+  "step_referral": "Encaminhamento"
 }

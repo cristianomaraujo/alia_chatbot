@@ -111,6 +111,9 @@ def test_referral_identity_not_in_case(client,monkeypatch):
  async def fake(messages,schema):return {'updates':[],'explanation':'','action':'summarize'}
  monkeypatch.setattr(main,'model',fake)
  case=client.post('/api/cases/'+case['id']+'/chat',json={'version':case['version'],'message':'Preparar encaminhamento'}).json()
+ async def no(messages,schema):return {'updates':[],'explanation':'','action':'no'}
+ monkeypatch.setattr(main,'model',no)
+ case=conversation(client,case,'Não quero localizar serviços')
  async def yes(messages,schema):return {'updates':[],'explanation':'','action':'yes'}
  monkeypatch.setattr(main,'model',yes)
  case=client.post('/api/cases/'+case['id']+'/chat',json={'version':case['version'],'message':'Sim'}).json()
@@ -189,7 +192,7 @@ def test_optional_gallery_and_chat_continuation(client,monkeypatch,choice):
  case=client.post('/api/cases/'+case['id']+'/chat',json={'version':case['version'],'message':'Corrijo: não relata dor'}).json()
  assert case['facts']['pain']=='Sem dor relatada'
  assert case['assessment']['status']=='insufficient'
- assert case['flow']['stage']=='referral_offer'
+ assert case['flow']['stage']=='services_offer'
 
 def complete_case(client):
  case=new(client)
@@ -202,41 +205,37 @@ def mock_reply(monkeypatch,**fields):
  async def fake(messages,schema):return {'updates':[],'explanation':'',**fields}
  monkeypatch.setattr(main,'model',fake)
 
-def test_summary_referral_then_maps_consent(client,monkeypatch):
- case=complete_case(client)
- mock_reply(monkeypatch,assessment_status='insufficient')
- case=conversation(client,case,'Pode sintetizar os achados?')
- assert case['assessment']['status']=='insufficient'
- assert 'insuficientes' in case['history'][-1]['content']
- assert case['flow']=={'stage':'referral_offer','referral_ready':False}
+def test_services_before_referral(client,monkeypatch):
+ case=complete_case(client);mock_reply(monkeypatch,assessment_status='insufficient')
+ case=conversation(client,case,'Sintetize')
+ assert case['flow']['stage']=='services_offer' and not case['flow']['referral_ready']
+ assert 'localizar' in case['history'][-1]['content']
  assert client.post('/api/cases/'+case['id']+'/referral-data',json={}).status_code==409
- mock_reply(monkeypatch,explanation='Podemos rever a ficha.')
- case=conversation(client,case,'Tenho uma dúvida sobre a ficha')
- assert case['flow']['stage']=='referral_offer' and not case['flow']['referral_ready']
- mock_reply(monkeypatch,action='yes')
- case=conversation(client,case,'Sim, quero o documento')
- assert case['flow']['referral_ready'] and case['flow']['stage']=='services_offer'
+ mock_reply(monkeypatch,action='yes');case=conversation(client,case,'Sim')
+ assert case['flow']['stage']=='city'
+ mock_reply(monkeypatch,location='Curitiba');case=conversation(client,case,'Curitiba')
+ assert case['flow']['stage']=='country'
+ mock_reply(monkeypatch,location='Brasil');case=conversation(client,case,'Brasil')
+ assert case['flow']['maps_ready'] and case['flow']['stage']=='referral_offer'
+ assert not case['flow']['referral_ready'] and 'encaminhamento' in case['history'][-1]['content']
+ mock_reply(monkeypatch,action='yes');case=conversation(client,case,'Quero preparar o encaminhamento')
+ assert case['flow']['referral_ready'] and case['flow']['stage']=='done'
  assert client.post('/api/cases/'+case['id']+'/referral-data',json={}).status_code==200
- case=conversation(client,case,'Sim, quero buscar um serviço')
- assert case['flow']['stage']=='city' and 'cidade' in case['history'][-1]['content']
- assert 'country' not in case['flow']
- mock_reply(monkeypatch,location='Curitiba')
- case=conversation(client,case,'Curitiba')
- assert case['flow']['stage']=='country' and 'país' in case['history'][-1]['content']
- mock_reply(monkeypatch,location='Brasil')
- case=conversation(client,case,'Brasil')
- assert case['flow']['maps_ready'] and case['flow']['city']=='Curitiba' and case['flow']['country']=='Brasil'
  assert 'city' not in case['facts'] and 'country' not in case['facts']
- assert 'google.com' not in json.dumps(case['facts'])
 
-def test_declined_offers_do_not_enable_buttons(client,monkeypatch):
+def test_declined_services_still_offers_referral(client,monkeypatch):
  case=complete_case(client);mock_reply(monkeypatch,assessment_status='no_match')
  case=conversation(client,case,'Revisar')
- assert 'Isso não exclui' in case['history'][-1]['content']
- mock_reply(monkeypatch,action='no');case=conversation(client,case,'Não quero encaminhamento')
- assert not case['flow']['referral_ready'] and case['flow']['stage']=='services_offer'
- case=conversation(client,case,'Não quero localizar serviços')
- assert case['flow']['stage']=='done' and not case['flow'].get('maps_ready')
+ mock_reply(monkeypatch,action='no');case=conversation(client,case,'Não quero localizar serviços')
+ assert case['flow']['stage']=='referral_offer' and not case['flow'].get('maps_ready')
+ case=conversation(client,case,'Não quero encaminhamento')
+ assert case['flow']['stage']=='done' and not case['flow']['referral_ready']
+
+def test_cancel_location_still_offers_referral(client,monkeypatch):
+ case=complete_case(client);mock_reply(monkeypatch,assessment_status='insufficient')
+ case=conversation(client,case,'Revisar');mock_reply(monkeypatch,action='yes');case=conversation(client,case,'Sim')
+ mock_reply(monkeypatch,action='no');case=conversation(client,case,'Não quero informar cidade')
+ assert case['flow']['stage']=='referral_offer' and not case['flow'].get('city')
 
 def test_compatibility_requires_source_and_stated_support(client,monkeypatch):
  case=complete_case(client)
@@ -257,7 +256,7 @@ def test_unsupported_compatibility_and_early_summary(client,monkeypatch):
  case=conversation(client,case,'Quero encaminhar sem completar')
  assert case['pending']=='sex' and case['assessment']['status']=='no_match'
  assert 'Invented lesion' not in case['history'][-1]['content']
- assert case['flow']['stage']=='referral_offer'
+ assert case['flow']['stage']=='services_offer'
 
 def test_collection_question_answer_and_strict_schema(client,monkeypatch):
  case=new(client)

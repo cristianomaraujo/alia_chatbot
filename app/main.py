@@ -294,33 +294,35 @@ async def chat(case_id:str,data:Turn,request:Request):
         if outcome=='compatible' and not accepted:outcome='no_match'
         if outcome=='collecting':outcome='insufficient'
         if outcome!='compatible':accepted=[]
-        labels=await translate({'compatible':'Os achados descritos podem ser compatíveis com as seguintes possibilidades, que precisam de avaliação profissional:','insufficient':'As informações disponíveis são insuficientes para apontar uma alteração compatível.','no_match':'Não foi possível estabelecer uma correspondência sustentada pelas regras disponíveis. Isso não exclui uma alteração que necessite de investigação.','offer':'Deseja gerar um encaminhamento para avaliação em Estomatologia/Medicina Oral?'},case['language'])
+        labels=await translate({'compatible':'Os achados descritos podem ser compatíveis com as seguintes possibilidades, que precisam de avaliação profissional:','insufficient':'As informações disponíveis são insuficientes para apontar uma alteração compatível.','no_match':'Não foi possível estabelecer uma correspondência sustentada pelas regras disponíveis. Isso não exclui uma alteração que necessite de investigação.','offer':'Deseja localizar serviços especializados em uma cidade e país de sua escolha?'},case['language'])
         narrative=labels[outcome]
         if accepted:
             translated_names=await translate({str(i):x['label'] for i,x in enumerate(accepted)},case['language'])
             narrative+='\n'+ '\n'.join(translated_names[str(i)]+': '+x['reason'] for i,x in enumerate(accepted))
         if explanation and not (reply.possibilities and len(accepted)<len(reply.possibilities)):narrative+='\n\n'+explanation
         case['assessment']={'status':outcome,'possibilities':accepted,'text':narrative}
-        case['flow']={'stage':'referral_offer','referral_ready':False}
+        case['flow']={'stage':'services_offer','referral_ready':False,'order':'services_first'}
         message=narrative+'\n\n'+labels['offer']
     elif stage=='collect':
         question=(await translate({'question':BY_KEY[pending]['question'] if pending else 'Podemos esclarecer sua dúvida antes de sintetizar os achados.'},case['language']))['question']
         message=(explanation+'\n\n' if clarification and explanation else '')+question
     else:
-        texts={'services_offer':'Deseja localizar serviços especializados em uma cidade e país de sua escolha?','city':'Em qual cidade deseja buscar um serviço?','country':'Em qual país fica essa cidade?','ready':'A busca está pronta abaixo. Os resultados são externos e não verificados pelo ALIA. Podemos continuar a conversa para dúvidas ou complementações.','continue':'Podemos continuar a conversa para esclarecer dúvidas ou complementar os achados.'}
+        texts={'referral_offer':'Deseja preparar um encaminhamento para avaliação em Estomatologia/Medicina Oral?','services_offer':'Deseja localizar serviços especializados em uma cidade e país de sua escolha?','city':'Em qual cidade deseja buscar um serviço?','country':'Em qual país fica essa cidade?','ready':'A busca está pronta abaixo. Os resultados são externos e não verificados pelo ALIA. Podemos continuar a conversa para dúvidas ou complementações.','continue':'Podemos continuar a conversa para esclarecer dúvidas ou complementar os achados.'}
         if stage=='referral_offer' and reply.action in ('yes','no'):
-            flow['referral_ready']=reply.action=='yes';flow['stage']='services_offer';message=texts['services_offer']
+            flow['referral_ready']=reply.action=='yes';flow['stage']='done' if flow.get('order')=='services_first' else 'services_offer';message=texts['continue'] if flow['stage']=='done' else texts['services_offer']
         elif stage=='services_offer' and reply.action=='yes':
             flow['stage']='city';flow['specialty']=reply.specialty;message=texts['city']
-        elif stage=='services_offer' and reply.action=='no':flow['stage']='done';message=texts['continue']
+        elif stage=='services_offer' and reply.action=='no':
+            flow['stage']='referral_offer' if flow.get('order')=='services_first' else 'done';message=texts.get(flow['stage'],texts['continue'])
         elif stage in ('city','country') and reply.action=='no':
-            flow['stage']='done';flow.pop('city',None);flow.pop('country',None);message=texts['continue']
+            flow['stage']='referral_offer' if flow.get('order')=='services_first' else 'done';flow.pop('city',None);flow.pop('country',None);message=texts.get(flow['stage'],texts['continue'])
         elif stage in ('city','country') and re.search(r'(?i)(não informado|desconhecid|unknown|no informado)',reply.location):
-            flow['stage']='done';flow.pop('city',None);flow.pop('country',None);message=texts['continue']
+            flow['stage']='referral_offer' if flow.get('order')=='services_first' else 'done';flow.pop('city',None);flow.pop('country',None);message=texts.get(flow['stage'],texts['continue'])
         elif stage in ('city','country') and reply.location.strip():
             flow[stage]=reply.location.strip()
             if stage=='city':flow['stage']='country';message=texts['country']
-            else:flow['stage']='done';flow['maps_ready']=True;message=texts['ready']
+            else:
+                flow['stage']='referral_offer' if flow.get('order')=='services_first' else 'done';flow['maps_ready']=True;message=texts['ready']+('\n\n'+texts['referral_offer'] if flow['stage']=='referral_offer' else '')
         else:
             message={'referral_offer':'Deseja gerar um encaminhamento para avaliação em Estomatologia/Medicina Oral?','services_offer':texts['services_offer'],'city':texts['city'],'country':texts['country']}.get(stage,texts['continue'])
         message=(await translate({'message':message},case['language']))['message']
