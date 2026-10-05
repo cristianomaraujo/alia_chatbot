@@ -256,7 +256,7 @@ def test_compatibility_requires_source_and_stated_support(client,monkeypatch):
  candidate={'pattern_id':'white_nonremovable','label':main.PATTERN_BY_ID['white_nonremovable']['label'],'reason':'Coloração branca não removível informada.','supporting_keys':['color','scraping'],'basis_excerpt':main.RULE_BY_ID['white_pattern']['text']}
  mock_reply(monkeypatch,assessment_status='compatible',possibilities=[candidate])
  case=conversation(client,case,'Sintetize')
- assert case['assessment']['status']=='compatible' and 'podem ser compatíveis' in case['assessment']['text']
+ assert case['assessment']['status']=='compatible' and 'não identificar uma condição específica' in case['assessment']['text']
  case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{'color':'Não informado'}}).json()
  assert not case['assessment'] and not case['flow']['referral_ready']
  case=conversation(client,case,'Revisar')
@@ -529,3 +529,44 @@ def test_semantic_verifier_can_reject_structural_match(client,monkeypatch):
  monkeypatch.setattr(main,'model',fake)
  case=conversation(client,case,'Sintetize')
  assert case['assessment']['status']=='validation_failed' and not case['assessment']['possibilities']
+
+
+def test_direct_negative_trauma_preserves_negation_and_advances(client,monkeypatch):
+ case=new(client)
+ keys=main.active_keys({})
+ preceding={k:'Não informado' for k in keys[:keys.index('trauma')]}
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':preceding}).json()
+ assert case['pending']=='trauma'
+ async def fail(messages,schema):raise AssertionError('No model call needed for a direct negative')
+ monkeypatch.setattr(main,'model',fail)
+ case=conversation(client,case,'Não há nenhuma fonte de trauma')
+ assert case['facts']['trauma']=='Não há nenhuma fonte de trauma'
+ assert case['fact_meta']['trauma']['state']=='absent'
+ assert case['pending']=='irritant_timing'
+ assert case['fact_meta']['trauma']['source_excerpt']=='Não há nenhuma fonte de trauma'
+
+def test_direct_answer_does_not_infer_from_complex_or_uncertain_trauma():
+ case={'pending':'trauma','flow':{'stage':'collect'}}
+ assert main.direct_answer(case,'Não sei se há trauma') is None
+ assert main.direct_answer(case,'Não há trauma, mas há irritação química') is None
+ assert main.direct_answer(case,'Não há trauma?') is None
+
+def test_empty_extraction_explains_non_advancement(client,monkeypatch):
+ case=new(client);mock_reply(monkeypatch)
+ case=conversation(client,case,'Texto que não foi capturado')
+ assert 'Não consegui registrar' in case['history'][-1]['content']
+ assert case['pending']=='sex'
+
+
+def test_internal_matching_reason_is_not_the_final_conclusion(client,monkeypatch):
+ case=new(client)
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{'color':'Vermelha','duration':'Seis meses'}}).json()
+ pattern=main.PATTERN_BY_ID['red_persistent']
+ candidate={'pattern_id':pattern['id'],'label':pattern['label'],'basis_excerpt':main.RULE_BY_ID[pattern['rule']]['text'],'supporting_keys':['color','duration'],'reason':'Preenchendo os critérios registrados para o padrão descritivo.'}
+ mock_reply(monkeypatch,action='summarize',assessment_status='compatible',possibilities=[candidate])
+ case=conversation(client,case,'Sintetize')
+ text=case['history'][-1]['content']
+ assert 'Preenchendo os critérios' not in text
+ assert 'não identificar uma condição específica' in text
+ assert 'avaliação presencial' in text
+ assert 'podem ser compatíveis com as seguintes possibilidades' not in text

@@ -171,5 +171,7 @@
   "describe_guidance": "Como descrever este achado",
   "applied_rule": "Regra clínica aplicada — paráfrase da literatura",
   "pdf_pages": "Páginas do PDF",
-  "stale_assessment": "Esta síntese usa uma versão anterior da base. Solicite uma nova síntese antes de preparar o encaminhamento."
+  "stale_assessment": "Esta síntese usa uma versão anterior da base. Solicite uma nova síntese antes de preparar o encaminhamento.",
+  "request_timeout": "A resposta demorou além do esperado. Atualize a ficha para conferir se o envio foi salvo antes de tentar novamente.",
+  "connection_failed": "Não foi possível confirmar o envio. Sua resposta permanece no campo. Atualize a ficha antes de tentar novamente."
 }

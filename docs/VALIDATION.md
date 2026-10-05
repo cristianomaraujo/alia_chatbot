@@ -36,3 +36,10 @@ The browser also verified recovery from a stale case version with the message dr
 The runtime now uses `knowledge/clinical_rules.json`, reconciled from the nine supplied articles, rather than the historical owner source. Each paraphrased rule records PDF pages, scope and limitations. The original source remains unchanged. Only four descriptive patterns are registered; prerequisites and semantic model consistency checks apply. Screening schedules are excluded from symptomatic lesion waiting rules. Lichenoid context is conditional; one principal lesion remains the unit of a case. Older syntheses require regeneration before review and referral.
 
 Automated tests use mocked model responses and establish software behavior only. They do not establish diagnostic accuracy, clinical safety, cross-language equivalence or guideline validity. The consistency verifier uses the same model family and is not independent clinical validation. No full-text copyrighted papers are distributed.
+
+
+## Conversation usability fixes — 2026-10-05
+
+Direct, unambiguous negative answers to the pending mechanical trauma question and explicit unknown/not-assessed controls no longer require model extraction. The exact response remains the provenance excerpt. Complex or uncertain negatives still require model extraction. Empty extraction now explains why collection did not advance. Errors are displayed at the composer, preserving the typed answer; network loss/timeout offers record reload before retry. The UI does not automatically retry a mutation.
+
+Descriptive patterns are no longer presented as named clinical conditions; internal candidate reasons stay in the evidence record. User-facing synthesis states the limits and separately verified next step. Older pipeline syntheses are blocked from referral until regeneration. Frontend regression tests check visible send errors, preservation of the typed response, busy-click protection and network reconciliation. Model-backed clinical evaluation remains outstanding.
