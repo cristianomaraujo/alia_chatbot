@@ -92,7 +92,7 @@ def test_catalog_provenance():
  data=TestClient(main.app).get('/api/catalog').json()
  assert len(data['gallery'])==16 and len(data['references'])==9
  assert all(x['ai_generated'] for x in data['gallery'])
- assert 'no diagnostic' in main.RULES.lower() or 'non-diagnostic' in main.RULES.lower()
+ assert 'never establish or confirm' in main.RULES.lower()
  assert 'neoplasias da cavidade oral.' in main.RULES
  assert len({k for k,_,_ in FIELDS})==len(FIELDS)
 
@@ -105,10 +105,17 @@ def test_invitation_required(client,monkeypatch):
  monkeypatch.setattr(main,'PRODUCTION',True)
  monkeypatch.delenv('REGISTRATION_CODE',raising=False)
  assert client.post('/api/register',json={'email':'blocked@example.org','password':'Long-Test-Password-2026'}).status_code==403
-def test_referral_identity_not_in_case(client):
+def test_referral_identity_not_in_case(client,monkeypatch):
  case=new(client)
+ assert client.post('/api/cases/'+case['id']+'/referral-data',json={}).status_code==409
+ async def fake(messages,schema):return {'updates':[],'explanation':'','action':'summarize'}
+ monkeypatch.setattr(main,'model',fake)
+ case=client.post('/api/cases/'+case['id']+'/chat',json={'version':case['version'],'message':'Preparar encaminhamento'}).json()
+ async def yes(messages,schema):return {'updates':[],'explanation':'','action':'yes'}
+ monkeypatch.setattr(main,'model',yes)
+ case=client.post('/api/cases/'+case['id']+'/chat',json={'version':case['version'],'message':'Sim'}).json()
  r=client.post('/api/cases/'+case['id']+'/referral-data',json={})
- assert r.status_code==200;assert r.json()=={'facts':{},'version':1}
+ assert r.status_code==200;assert r.json()=={'facts':{},'version':case['version']}
  assert set(client.get('/api/cases/'+case['id']).json())==set(case)
 
 def test_rate_limit():
@@ -166,7 +173,7 @@ def test_demo_same_model_and_scope(monkeypatch):
  monkeypatch.setattr(main,'model',fake)
  case=c.post('/api/cases/'+case['id']+'/chat',json={'version':1,'message':'Feminino'}).json()
  assert case['pending']=='age'
- assert c.post('/api/cases/'+case['id']+'/referral-data',json={}).json()['facts']=={'sex':'Feminino'}
+ assert c.post('/api/cases/'+case['id']+'/referral-data',json={}).status_code==409
 
 @pytest.mark.parametrize('choice',['none','skip'])
 def test_optional_gallery_and_chat_continuation(client,monkeypatch,choice):
@@ -176,9 +183,90 @@ def test_optional_gallery_and_chat_continuation(client,monkeypatch,choice):
  case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'gallery':choice}).json()
  assert case['gallery']==choice and case['facts']==original
  assert main.NOTICE not in case['history'][-1]['content']
- assert 'Deseja complementar' in case['history'][-1]['content']
+ assert 'continuar a conversa' in case['history'][-1]['content']
  async def fake(messages,schema):return {'updates':[{'key':'pain','value':'Sem dor relatada'}],'explanation':''}
  monkeypatch.setattr(main,'model',fake)
  case=client.post('/api/cases/'+case['id']+'/chat',json={'version':case['version'],'message':'Corrijo: não relata dor'}).json()
  assert case['facts']['pain']=='Sem dor relatada'
- assert 'opcional' in case['history'][-1]['content']
+ assert case['assessment']['status']=='insufficient'
+ assert case['flow']['stage']=='referral_offer'
+
+def complete_case(client):
+ case=new(client)
+ return client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{k:'Não informado' for k,_,_ in FIELDS}}).json()
+def conversation(client,case,message):
+ r=client.post('/api/cases/'+case['id']+'/chat',json={'version':case['version'],'message':message})
+ assert r.status_code==200,r.text
+ return r.json()
+def mock_reply(monkeypatch,**fields):
+ async def fake(messages,schema):return {'updates':[],'explanation':'',**fields}
+ monkeypatch.setattr(main,'model',fake)
+
+def test_summary_referral_then_maps_consent(client,monkeypatch):
+ case=complete_case(client)
+ mock_reply(monkeypatch,assessment_status='insufficient')
+ case=conversation(client,case,'Pode sintetizar os achados?')
+ assert case['assessment']['status']=='insufficient'
+ assert 'insuficientes' in case['history'][-1]['content']
+ assert case['flow']=={'stage':'referral_offer','referral_ready':False}
+ assert client.post('/api/cases/'+case['id']+'/referral-data',json={}).status_code==409
+ mock_reply(monkeypatch,explanation='Podemos rever a ficha.')
+ case=conversation(client,case,'Tenho uma dúvida sobre a ficha')
+ assert case['flow']['stage']=='referral_offer' and not case['flow']['referral_ready']
+ mock_reply(monkeypatch,action='yes')
+ case=conversation(client,case,'Sim, quero o documento')
+ assert case['flow']['referral_ready'] and case['flow']['stage']=='services_offer'
+ assert client.post('/api/cases/'+case['id']+'/referral-data',json={}).status_code==200
+ case=conversation(client,case,'Sim, quero buscar um serviço')
+ assert case['flow']['stage']=='city' and 'cidade' in case['history'][-1]['content']
+ assert 'country' not in case['flow']
+ mock_reply(monkeypatch,location='Curitiba')
+ case=conversation(client,case,'Curitiba')
+ assert case['flow']['stage']=='country' and 'país' in case['history'][-1]['content']
+ mock_reply(monkeypatch,location='Brasil')
+ case=conversation(client,case,'Brasil')
+ assert case['flow']['maps_ready'] and case['flow']['city']=='Curitiba' and case['flow']['country']=='Brasil'
+ assert 'city' not in case['facts'] and 'country' not in case['facts']
+ assert 'google.com' not in json.dumps(case['facts'])
+
+def test_declined_offers_do_not_enable_buttons(client,monkeypatch):
+ case=complete_case(client);mock_reply(monkeypatch,assessment_status='no_match')
+ case=conversation(client,case,'Revisar')
+ assert 'Isso não exclui' in case['history'][-1]['content']
+ mock_reply(monkeypatch,action='no');case=conversation(client,case,'Não quero encaminhamento')
+ assert not case['flow']['referral_ready'] and case['flow']['stage']=='services_offer'
+ case=conversation(client,case,'Não quero localizar serviços')
+ assert case['flow']['stage']=='done' and not case['flow'].get('maps_ready')
+
+def test_compatibility_requires_source_and_stated_support(client,monkeypatch):
+ case=complete_case(client)
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{'color':'Branca'}}).json()
+ candidate={'label':'lesões brancas','reason':'Coloração branca informada; demais dados limitados.','supporting_keys':['color'],'basis_excerpt':'Dê atenção especial a lesões brancas, vermelhas ou vermelho-brancas'}
+ mock_reply(monkeypatch,assessment_status='compatible',possibilities=[candidate])
+ case=conversation(client,case,'Sintetize')
+ assert case['assessment']['status']=='compatible' and 'podem ser compatíveis' in case['assessment']['text']
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{'color':'Não informado'}}).json()
+ assert not case['assessment'] and not case['flow']['referral_ready']
+ case=conversation(client,case,'Revisar')
+ assert case['assessment']['status']=='no_match' and not case['assessment']['possibilities']
+
+def test_unsupported_compatibility_and_early_summary(client,monkeypatch):
+ case=new(client)
+ candidate={'label':'Invented lesion','reason':'Invented match','supporting_keys':['sex'],'basis_excerpt':'Invented criterion'}
+ mock_reply(monkeypatch,action='summarize',assessment_status='compatible',possibilities=[candidate],explanation='Invented lesion is compatible.')
+ case=conversation(client,case,'Quero encaminhar sem completar')
+ assert case['pending']=='sex' and case['assessment']['status']=='no_match'
+ assert 'Invented lesion' not in case['history'][-1]['content']
+ assert case['flow']['stage']=='referral_offer'
+
+def test_collection_question_answer_and_strict_schema(client,monkeypatch):
+ case=new(client)
+ async def fake(messages,schema):
+  assert set(schema['required'])==set(schema['properties'])
+  assert set(schema['$defs']['Compatibility']['required'])==set(schema['$defs']['Compatibility']['properties'])
+  return {'updates':[],'explanation':'Registre apenas o que foi observado na avaliação clínica.'}
+ monkeypatch.setattr(main,'model',fake)
+ case=conversation(client,case,'Como registrar essa informação?')
+ assert case['pending']=='sex'
+ assert 'Registre apenas' in case['history'][-1]['content']
+ assert case['history'][-1]['content'].count('?')==1

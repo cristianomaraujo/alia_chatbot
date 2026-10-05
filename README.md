@@ -1,6 +1,6 @@
 # ALIA
 
-Assessment of Lesions with Intelligent Assistance. Text-only AI support for collecting and organizing oral lesion triage findings. It has no diagnostic purpose. It can make errors and requires professional review. Clinical content is limited to the project owner's supplied rules; the nine references are shown as bibliography only.
+Assessment of Lesions with Intelligent Assistance. Text-only AI support for collecting and organizing oral lesion triage findings. It can cautiously discuss possible compatible alterations supported by supplied findings and the owner rules, without confirming the nature of an alteration. It can make errors and requires professional review. Clinical content is limited to the project owner's supplied rules; the nine references are shown as bibliography only.
 
 ## Features
 
@@ -8,8 +8,8 @@ Assessment of Lesions with Intelligent Assistance. Text-only AI support for coll
 - Encrypted saved cases, sequential questions, explicit unknown values, editable findings and resumption.
 - Language-name selector; automatic UI and conversation translations. Language availability does not imply validated clinical performance.
 - Sixteen supplied AI-generated illustrations, optionally consulted by the professional. The gallery can be skipped or marked as having no similar figure; conversation continues afterward. No photo upload or image analysis. Illustration labels are never used as patient findings.
-- Reviewed referral printable from the browser or saved using the browser's PDF option. Optional international registration field; patient identification stays in the referral form and is not transmitted to the API/model.
-- External Google Maps search using city, country and specialty only. No provider database, endorsement or validation of search results.
+- Reviewed referral printable from the browser or saved using the browser's PDF option. Offered after the conversational synthesis and enabled after acceptance. Optional international registration field; patient identification stays in the referral form and is not transmitted to the API/model.
+- External Google Maps search using city, country and specialty only. Offered within the conversation after the referral offer, with city and country collected separately after consent. No provider database, endorsement or validation of search results.
 
 ## Public demonstration
 
@@ -17,7 +17,7 @@ The login page offers three fictional case starting points without registration.
 
 Guest case payloads are held only in process memory, are inaccessible after one hour, logout or restart, and are never written to the case database. Each session allows two cases and 45 model-consuming operations. Starting sessions and model operations also have shared and per-address limits. These limits reduce API use but are not a billing cap; configure account spending controls separately. Login and invite registration remain available for permanent saved cases.
 
-The full AI scope notice appears in the opening conversation message and referral document. It is not automatically repeated at phase transitions or gallery completion.
+The full AI scope notice appears in the opening conversation message and referral document. Compatibility candidates require a source label and exact excerpt present in the owner rules plus explicitly recorded supporting fields. Missing source support yields no correspondence; insufficient findings yield an explicit limitation. This provenance check does not establish clinical validity. Corrected findings invalidate the prior synthesis and enabled referral. It is not automatically repeated at phase transitions or gallery completion.
 
 ## Local startup
 
@@ -47,7 +47,7 @@ No patient data, API keys or session secrets belong in GitHub. Back up the encry
 
 ## Layout
 
-`app/main.py` owns API, sessions, case authorization, encryption and model access. `app/questions.py` defines the sequential collection fields. `app/static` contains the UI and supplied visuals. `knowledge/system.txt` overrides diagnostic objectives in the supplied original rules; `original_rules.txt` preserves the supplied clinical wording with the completed closing phrase. `gallery.json`, `references.json`, and `ui.json` are separate catalogs.
+`app/main.py` owns API, sessions, case authorization, encryption and model access. `app/questions.py` defines the sequential collection fields. `app/static` contains the UI and supplied visuals. `knowledge/system.txt` defines the current cautious conversational scope; `original_rules.txt` preserves the supplied clinical wording with the completed closing phrase. `gallery.json`, `references.json`, and `ui.json` are separate catalogs.
 
 ## Validation and limitations
 
@@ -56,7 +56,7 @@ pip install -r requirements-dev.txt
 python -m pytest -q
 ```
 
-Tests mock the model and check access control, encryption, CSRF, model failures, unknown facts, concurrency and collection flow. They do not establish clinical validity. Model extraction and educational explanations still need expert evaluation, including prompt injection, omission, multilingual equivalence and repeated conversational runs. Non-diagnostic behavior is instructed but not proven by software tests. The app does not provide automatic follow-up timing or treatment recommendations.
+Tests mock the model and check access control, encryption, CSRF, model failures, unknown facts, concurrency and collection flow. They do not establish clinical validity. Model extraction and educational explanations still need expert evaluation, including prompt injection, omission, multilingual equivalence and repeated conversational runs. Cautious compatibility discussion and clinical correctness are instructed but not proven by software tests. The app does not provide automatic follow-up timing or treatment recommendations.
 
 Clinical rules mention concepts that may require additional source clarification; do not infer that every listed publication is a guideline or that every rule has been independently verified. The full papers are not incorporated. UI translations require the configured model and fail explicitly; prior transcript messages retain their original language.
 

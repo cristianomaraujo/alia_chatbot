@@ -5,3 +5,5 @@ html[dir=rtl] .sidebar{left:auto;right:0}html[dir=rtl] main{margin-left:0;margin
 #demoStart{display:block;width:100%;margin-top:14px}#demoOptions{display:grid;gap:12px;margin:20px 0}#demoPanel p{max-width:100%;margin-top:10px}#demoPanel small{display:block;margin-top:10px}
 
 @media(max-width:650px){.sidebar-bottom{display:block;padding:0 10px}.sidebar-bottom small{display:none}.sidebar-bottom button{margin-top:0;padding:8px 0}}
+
+#chatActions{padding:14px 20px;justify-content:flex-start;flex-wrap:wrap;border-top:1px solid var(--line)}.action-link{display:inline-block;background:#edf2ed;color:var(--green);padding:13px 18px;border-radius:9px;text-decoration:none;font-size:14px}
