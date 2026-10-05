@@ -103,5 +103,16 @@
   "step_collect": "Coleta",
   "step_summary": "Síntese",
   "step_services": "Serviços",
-  "step_referral": "Encaminhamento"
+  "step_referral": "Encaminhamento",
+  "about_kicker": "CONHEÇA A PLATAFORMA",
+  "about_role": "Assistência à triagem oral",
+  "about_purpose": "Uma conversa para organizar achados orais e apoiar a revisão profissional.",
+  "about_start": "Ir para a triagem",
+  "about_audience": "Para profissionais de saúde",
+  "about_scope_title": "Escopo profissional",
+  "about_images_title": "Ilustrações de referência",
+  "about_languages_title": "Idiomas e traduções",
+  "about_sources_title": "Conheça a base do conteúdo",
+  "about_sources_hint": "Consulte as referências que fundamentam as regras do ALIA.",
+  "about_sources_action": "Ver referências científicas"
 }
