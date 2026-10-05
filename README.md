@@ -53,7 +53,7 @@ No patient data, API keys or session secrets belong in GitHub. Back up the encry
 
 ```bash
 pip install -r requirements-dev.txt
-pytest -q
+python -m pytest -q
 ```
 
 Tests mock the model and check access control, encryption, CSRF, model failures, unknown facts, concurrency and collection flow. They do not establish clinical validity. Model extraction and educational explanations still need expert evaluation, including prompt injection, omission, multilingual equivalence and repeated conversational runs. Non-diagnostic behavior is instructed but not proven by software tests. The app does not provide automatic follow-up timing or treatment recommendations.
