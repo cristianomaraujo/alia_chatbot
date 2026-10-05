@@ -116,3 +116,69 @@ def test_rate_limit():
  for _ in range(10):main.limit(request,'test',10)
  with pytest.raises(main.HTTPException) as error:main.limit(request,'test',10)
  assert error.value.status_code==429
+
+def test_notice_only_in_opening(client,monkeypatch):
+ case=new(client)
+ async def fake(messages,schema):return {'updates':[{'key':'sex','value':'Feminino'},{'key':'age','value':'52'},{'key':'complaint','value':'Alteração branca'}],'explanation':''}
+ monkeypatch.setattr(main,'model',fake)
+ case=client.post('/api/cases/'+case['id']+'/chat',json={'version':1,'message':'Mulher, 52 anos, alteração branca'}).json()
+ assert main.NOTICE in case['history'][0]['content']
+ assert main.NOTICE not in case['history'][-1]['content']
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{k:'Não informado' for k,_,_ in FIELDS}}).json()
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'gallery':'none'}).json()
+ assert main.NOTICE not in case['history'][-1]['content']
+
+def demo_client():
+ c=TestClient(main.app);r=c.post('/api/demo/start',json={'scenario':'white-patch'})
+ assert r.status_code==200;c.headers['X-CSRF-Token']=r.json()['csrf'];return c
+
+def test_demo_is_temporary_and_isolated(client):
+ protected=new(client);demo=demo_client();case=new(demo)
+ assert case['demo'] and case['example']['id']=='white-patch'
+ assert demo.get('/api/cases/'+protected['id']).status_code==404
+ assert client.get('/api/cases/'+case['id']).status_code==404
+ with main.db() as c:assert c.execute('SELECT count(*) FROM cases WHERE id=?',(case['id'],)).fetchone()[0]==0
+ assert demo.get('/api/cases').json()==[]
+ assert demo.patch('/api/cases/'+case['id'],json={'version':1,'facts':{'age':'52'}}).json()['version']==2
+ assert demo.patch('/api/cases/'+case['id'],json={'version':1,'facts':{'age':'61'}}).status_code==409
+ assert new(demo)['demo']
+ assert demo.post('/api/cases',json={'language':'pt'}).status_code==429
+ assert demo.post('/api/logout').status_code==200
+ assert demo.get('/api/cases/'+case['id']).status_code==401
+
+def test_demo_expiry_csrf_and_budget(monkeypatch):
+ c=demo_client();case=new(c);token=main.hashed(c.cookies.get('alia_session'));session=main.DEMO_SESSIONS[token]
+ csrf=c.headers.pop('X-CSRF-Token')
+ assert c.patch('/api/cases/'+case['id'],json={'version':1,'facts':{'age':'52'}}).status_code==403
+ c.headers['X-CSRF-Token']=csrf;session['calls']=45
+ async def forbidden(*args):raise AssertionError('Over-budget call must not reach model')
+ monkeypatch.setattr(main,'model',forbidden)
+ assert c.post('/api/cases/'+case['id']+'/chat',json={'version':1,'message':'Feminino'}).status_code==429
+ session['expires']=0
+ assert c.get('/api/me').status_code==401
+
+def test_demo_same_model_and_scope(monkeypatch):
+ c=demo_client();case=new(c)
+ async def fake(messages,schema):
+  assert main.RULES in messages[0]['content']
+  assert 'Never repeat that disclaimer' in messages[0]['content']
+  return {'updates':[{'key':'sex','value':'Feminino'}],'explanation':''}
+ monkeypatch.setattr(main,'model',fake)
+ case=c.post('/api/cases/'+case['id']+'/chat',json={'version':1,'message':'Feminino'}).json()
+ assert case['pending']=='age'
+ assert c.post('/api/cases/'+case['id']+'/referral-data',json={}).json()['facts']=={'sex':'Feminino'}
+
+@pytest.mark.parametrize('choice',['none','skip'])
+def test_optional_gallery_and_chat_continuation(client,monkeypatch,choice):
+ case=new(client)
+ case=client.patch('/api/cases/'+case['id'],json={'version':1,'facts':{k:'Não informado' for k,_,_ in FIELDS}}).json()
+ original=dict(case['facts'])
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'gallery':choice}).json()
+ assert case['gallery']==choice and case['facts']==original
+ assert main.NOTICE not in case['history'][-1]['content']
+ assert 'Deseja complementar' in case['history'][-1]['content']
+ async def fake(messages,schema):return {'updates':[{'key':'pain','value':'Sem dor relatada'}],'explanation':''}
+ monkeypatch.setattr(main,'model',fake)
+ case=client.post('/api/cases/'+case['id']+'/chat',json={'version':case['version'],'message':'Corrijo: não relata dor'}).json()
+ assert case['facts']['pain']=='Sem dor relatada'
+ assert 'opcional' in case['history'][-1]['content']

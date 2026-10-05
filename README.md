@@ -7,9 +7,17 @@ Assessment of Lesions with Intelligent Assistance. Text-only AI support for coll
 - Email/password accounts, invite registration in production, eight-hour sessions and per-user case access.
 - Encrypted saved cases, sequential questions, explicit unknown values, editable findings and resumption.
 - Language-name selector; automatic UI and conversation translations. Language availability does not imply validated clinical performance.
-- Sixteen supplied AI-generated illustrations, selected by the professional. No photo upload or image analysis. Illustration labels are never used as patient findings.
+- Sixteen supplied AI-generated illustrations, optionally consulted by the professional. The gallery can be skipped or marked as having no similar figure; conversation continues afterward. No photo upload or image analysis. Illustration labels are never used as patient findings.
 - Reviewed referral printable from the browser or saved using the browser's PDF option. Optional international registration field; patient identification stays in the referral form and is not transmitted to the API/model.
 - External Google Maps search using city, country and specialty only. No provider database, endorsement or validation of search results.
+
+## Public demonstration
+
+The login page offers three fictional case starting points without registration. Demonstration conversations use the same model and clinical rules as registered cases. Findings are entered by the visitor, not prefilled from the example. Referral exports carry a demonstration watermark.
+
+Guest case payloads are held only in process memory, are inaccessible after one hour, logout or restart, and are never written to the case database. Each session allows two cases and 45 model-consuming operations. Starting sessions and model operations also have shared and per-address limits. These limits reduce API use but are not a billing cap; configure account spending controls separately. Login and invite registration remain available for permanent saved cases.
+
+The full AI scope notice appears in the opening conversation message and referral document. It is not automatically repeated at phase transitions or gallery completion.
 
 ## Local startup
 

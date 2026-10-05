@@ -25,7 +25,7 @@
   "triage": "Triagem em andamento",
   "referral": "Preparar encaminhamento",
   "gallery_warning": "Imagens ilustrativas geradas por IA. Não são fotografias de pacientes nem referências diagnósticas validadas. Semelhança visual não confirma ou exclui diagnóstico.",
-  "select_figure": "Escolher representação",
+  "select_figure": "Consultar ilustrações (opcional)",
   "your_message": "Sua mensagem",
   "unknown": "Não informado / desconhecido",
   "send": "Enviar ↗",
@@ -53,7 +53,7 @@
   "language_caution": "As traduções são automáticas. A disponibilidade de um idioma não implica validação de desempenho clínico nesse idioma.",
   "gallery_title": "Representações ilustrativas",
   "close": "Fechar",
-  "none_figure": "Nenhuma das figuras",
+  "none_figure": "Nenhuma é parecida",
   "unknown_figure": "Não foi possível identificar",
   "edit_fact": "Corrigir achado",
   "cancel": "Cancelar",
@@ -86,5 +86,13 @@
   "signature": "Assinatura do profissional responsável",
   "default_reason": "Solicito avaliação em Estomatologia/Medicina Oral dos achados descritos.",
   "have_account": "Já tenho conta",
-  "refresh_case": "Reabra o caso atualizado antes de imprimir."
+  "refresh_case": "Reabra o caso atualizado antes de imprimir.",
+  "demo_start": "Experimentar com um caso fictício",
+  "demo_notice": "Demonstração — caso fictício, sem validade clínica",
+  "demo_hint": "Use somente dados fictícios. Sessão temporária de até uma hora, sem salvar casos permanentemente. As respostas são geradas pelo mesmo modelo e regras da plataforma.",
+  "demo_choose": "Escolha um caso fictício",
+  "demo_choose_hint": "O exemplo fornece informações para você responder à conversa; os achados não são preenchidos automaticamente.",
+  "demo_exit": "Encerrar demonstração",
+  "skip_figure": "Pular esta etapa",
+  "gallery_optional": "Consulta opcional: você pode pular esta etapa ou continuar a conversa sem escolher uma figura."
 }

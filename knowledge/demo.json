@@ -1,0 +1,17 @@
+[
+  {
+    "id": "white-patch",
+    "title": "Exemplo 1 — alteração branca",
+    "details": "Caso fictício: mulher, 52 anos, placa branca na mucosa jugal há quatro semanas. Cerca de 8 mm, sem dor relatada, não removível à raspagem. Demais informações não fornecidas: responda “não informado” quando necessário. Não há diagnóstico definido."
+  },
+  {
+    "id": "ulcer",
+    "title": "Exemplo 2 — ulceração",
+    "details": "Caso fictício: homem, 61 anos, ulceração na borda lateral da língua há três semanas, cerca de 12 mm, com dor relatada. História de tabagismo informada; quantidade e duração não fornecidas. Demais informações não fornecidas. Não há diagnóstico definido."
+  },
+  {
+    "id": "incomplete",
+    "title": "Exemplo 3 — informações incompletas",
+    "details": "Caso fictício: pessoa de 40 anos relata uma alteração na mucosa oral. Sexo, localização, duração e características não informados. Use dados desconhecidos para explorar a coleta de informações e o encaminhamento incompleto. Não há diagnóstico definido."
+  }
+]

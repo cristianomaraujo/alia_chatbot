@@ -13,3 +13,5 @@ The browser's print function generates the referral/PDF. Identity is entered in 
 Browser checks passed for registration/login, starting a case, resuming from history, referral form and print/PDF generation. Desktop and mobile screenshots were inspected; no JavaScript errors or mobile horizontal overflow were observed. Tests used synthetic content only.
 
 The 16-figure gallery and a complete 35-field synthetic referral were also checked in the browser. The complete A4 export has two pages; all pages were rendered and visually inspected.
+
+Update: 20 API tests passed, including notice placement, temporary demo storage, demo/account isolation, expiry, CSRF, limits, shared model instructions, optional gallery and conversation after skipping or choosing no similar figure. Guest demo start, referral watermark, mobile layout and logout were checked in the browser without a live model call.
