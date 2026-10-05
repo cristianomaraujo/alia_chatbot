@@ -570,3 +570,36 @@ def test_internal_matching_reason_is_not_the_final_conclusion(client,monkeypatch
  assert 'não identificar uma condição específica' in text
  assert 'avaliação presencial' in text
  assert 'podem ser compatíveis com as seguintes possibilidades' not in text
+
+def test_none_medications_is_recorded_and_advances_without_model(client,monkeypatch):
+ case=new(client)
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{'sex':'Feminino','age':'50','complaint':'Dor','health':'Não informado'}}).json()
+ assert case['pending']=='medications'
+ async def fail(messages,schema):raise AssertionError('Direct negative must not depend on model extraction')
+ monkeypatch.setattr(main,'model',fail)
+ case=conversation(client,case,'Nenhum')
+ assert case['pending']=='allergies'
+ assert case['fact_meta']['medications']['state']=='absent'
+ assert case['fact_meta']['medications']['source_excerpt']=='Nenhum'
+ assert 'ausência de medicamentos' in case['facts']['medications']
+ assert case['history'][-1]['content']==main.BY_KEY['allergies']['question']
+
+@pytest.mark.parametrize('key',sorted(main.NEGATIVE_ANSWER_FIELDS))
+@pytest.mark.parametrize('answer',['Nenhum','Não','None','Ninguno'])
+def test_short_negatives_are_contextual(key,answer):
+ result=main.direct_answer({'pending':key,'flow':{'stage':'collect'}},answer)
+ assert result['updates'][0]['key']==key
+ assert result['updates'][0]['state']=='absent'
+ assert result['updates'][0]['source_excerpt']==answer
+
+@pytest.mark.parametrize('key',['sex','age','location','size','duration','shape','surface','color','evolution','distribution'])
+def test_short_negatives_do_not_fill_descriptive_fields(key):
+ assert main.direct_answer({'pending':key},'Nenhum') is None
+
+@pytest.mark.parametrize('answer',['Não sei se usa medicamentos','Nenhum?','Nenhum atualmente, mas usava antes','Nenhum, exceto losartana'])
+def test_uncertain_or_complex_medication_answer_requires_extraction(answer):
+ assert main.direct_answer({'pending':'medications'},answer) is None
+
+def test_unknown_and_not_assessed_remain_different_from_none():
+ for answer,state in [('Nenhum','absent'),('Não informado','unknown'),('Não avaliado','not_assessed')]:
+  assert main.direct_answer({'pending':'medications'},answer)['updates'][0]['state']==state

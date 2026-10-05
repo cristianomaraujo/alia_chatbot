@@ -328,6 +328,14 @@ async def verify_output(case,possibilities,attention,narrative,session_data,requ
     try:return Verification.model_validate(raw)
     except ValueError:raise HTTPException(502,'Não foi possível verificar a resposta. Nenhuma informação deste turno foi salva.')
 
+NEGATIVE_ANSWER_FIELDS={
+    'medications','allergies','tobacco','alcohol','oral_habits','diet',
+    'cancer_therapy','pain','induration','multiple','ulceration','coating',
+    'bleeding','odor','trauma','scraping','photo_record','reticular_pattern',
+    'medication_timing','contact_relation','clinical_suspicion',
+}
+NONE_FINDING_FIELDS={'complaint','health','extraoral','nodes','intraoral'}
+
 def direct_answer(case,message):
     """Only unambiguous workflow answers; never classify a clinical narrative."""
     key=case.get('pending')
@@ -336,9 +344,13 @@ def direct_answer(case,message):
     state=None
     if text in ('não informado / desconhecido','não informado','desconhecido','unknown','not provided','no informado'):state='unknown'
     elif text in ('não avaliado','not assessed','no evaluado'):state='not_assessed'
-    elif key=='trauma' and (text in ('não','nao','no','nenhum','nenhuma') or re.fullmatch(r'não há (?:nenhuma? )?(?:fonte de )?trauma(?: mecânico)?',text)):state='absent'
+    elif key in NEGATIVE_ANSWER_FIELDS and text in ('não','nao','no','nenhum','nenhuma','nenhuns','nenhumas','none','ninguno','ninguna'):state='absent'
+    elif key in NONE_FINDING_FIELDS and text in ('nenhum','nenhuma','none','ninguno','ninguna'):state='absent'
+    elif key=='trauma' and re.fullmatch(r'não há (?:nenhuma? )?(?:fonte de )?trauma(?: mecânico)?',text):state='absent'
     if not state:return None
-    return {'updates':[{'key':key,'value':message.strip(),'state':state,'origin':'professional','source_excerpt':message.strip()}],'explanation':''}
+    value=message.strip()
+    if key=='medications' and state=='absent' and case.get('language')=='pt':value='Profissional informa ausência de medicamentos sistêmicos em uso.'
+    return {'updates':[{'key':key,'value':value,'state':state,'origin':'professional','source_excerpt':message.strip()}],'explanation':''}
 
 @app.post('/api/cases/{case_id}/chat')
 async def chat(case_id:str,data:Turn,request:Request):
