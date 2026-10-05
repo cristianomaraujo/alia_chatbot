@@ -270,3 +270,26 @@ def test_collection_question_answer_and_strict_schema(client,monkeypatch):
  assert case['pending']=='sex'
  assert 'Registre apenas' in case['history'][-1]['content']
  assert case['history'][-1]['content'].count('?')==1
+
+
+def test_collection_suppresses_interpretation_and_duplicate_question(client,monkeypatch):
+ case=new(client)
+ mock_reply(monkeypatch,updates=[{'key':'sex','value':'Feminino'}],explanation='Esses achados sugerem uma lesão suspeita. Qual a idade da paciente?')
+ case=conversation(client,case,'Feminino')
+ assert case['pending']=='age'
+ assert case['history'][-1]['content']==main.BY_KEY['age']['question']
+ assert not case.get('assessment')
+
+def test_misunderstanding_never_records_unknown_or_advances(client,monkeypatch):
+ case=new(client)
+ mock_reply(monkeypatch,updates=[{'key':'sex','value':'Não informado'}],explanation='Claro. Informe o sexo registrado na avaliação. '+main.BY_KEY['sex']['question'])
+ case=conversation(client,case,'Não entendi a pergunta')
+ assert case['pending']=='sex' and case['facts']=={}
+ assert 'Claro.' in case['history'][-1]['content']
+ assert case['history'][-1]['content'].count('?')==1
+
+def test_model_classified_clarification_preserves_current_step(client,monkeypatch):
+ case=new(client)
+ mock_reply(monkeypatch,needs_clarification=True,updates=[{'key':'sex','value':'Não informado'}],explanation='Posso explicar essa informação em palavras mais simples.')
+ case=conversation(client,case,'Explique melhor essa informação')
+ assert case['pending']=='sex' and not case['facts']

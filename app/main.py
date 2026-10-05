@@ -152,7 +152,7 @@ def catalog():return {'gallery':GALLERY,'references':REFERENCES,'notice':NOTICE,
 async def model(messages,schema):
     key=os.getenv('OPENAI_API_KEY','').strip()
     if not key:raise HTTPException(503,'O serviço de conversa ainda não foi configurado. Os casos existentes continuam disponíveis.')
-    payload={'model':os.getenv('OPENAI_MODEL','gpt-4o'),'messages':messages,'response_format':{'type':'json_schema','json_schema':{'name':'alia_reply','strict':True,'schema':schema}}}
+    payload={'model':os.getenv('OPENAI_MODEL','gpt-6-luna'),'messages':messages,'response_format':{'type':'json_schema','json_schema':{'name':'alia_reply','strict':True,'schema':schema}}}
     try:
         async with httpx.AsyncClient(timeout=75) as client:r=await client.post('https://api.openai.com/v1/chat/completions',headers={'Authorization':'Bearer '+key},json=payload)
         r.raise_for_status();choice=r.json()['choices'][0]
@@ -240,6 +240,7 @@ class Extraction(BaseModel):
     model_config=ConfigDict(extra='forbid')
     updates:list['FactUpdate']
     explanation:str=Field(max_length=3000)
+    needs_clarification:bool=False
     action:Literal['none','yes','no','summarize']= 'none'
     location:str=Field(default='',max_length=120)
     specialty:Literal['oral','head_neck']='oral'
@@ -258,7 +259,7 @@ async def chat(case_id:str,data:Turn,request:Request):
     if not data.message.strip():raise HTTPException(422,'Escreva uma mensagem.')
     demo_budget(s,request)
     flow=case.setdefault('flow',{'stage':'collect','referral_ready':False})
-    instruction=RULES+'\nExtract only explicit findings from the last user message. Use pending key for short answers and preserve corrections and unknowns. Answer questions conversationally in explanation, grounded ONLY in OWNER RULES; ordinary factual answers need no explanation. Never repeat that disclaimer in explanation. Ask no more than one question: the server supplies the next question, so explanation contains no questions. action classifies explicit consent/refusal to the current flow offer; never infer consent from silence, a clinical fact or an unrelated question. summarize only if explicitly asked to finish, review or prepare a referral early. At city/country stages, location is the requested city/country only; do not extract it as a patient finding. specialty=head_neck only when explicitly requested, otherwise oral. After the interview is complete or an early summary is requested, synthesize findings and discuss possible compatible alterations with uncertainty, without the word diagnosis or a definitive conclusion. assessment_status=compatible only with sufficient stated findings AND explicit source support. For every possibility supply supporting_keys and an exact basis_excerpt from OWNER RULES, and use a Portuguese source label explicitly present in OWNER RULES (not gallery labels). Do not use outside knowledge to fill missing compatibility criteria. If the rules lack support use no_match; if facts are insufficient use insufficient. For collecting use empty possibilities. Explain limitations and unknowns clearly; no matching possibility does NOT exclude a serious alteration. Images do not determine compatibility. Never invent findings or provider names. Write explanation, values and reasons in selected language.'
+    instruction=RULES+'\nExtract only explicit findings from the last user message. Set needs_clarification=true when the user asks what the current question means, says they do not understand, or asks how to answer. Such requests are NOT unknown clinical answers: return no updates and no action; explain the current question briefly and kindly without interpreting patient findings. During collection NEVER interpret findings, suggest compatible alterations, discuss severity or recommend referral. For ordinary factual answers explanation must be empty. Clinical interpretation belongs ONLY to the final synthesis. Use pending key for short answers and preserve corrections and unknowns. Answer questions conversationally in explanation, grounded ONLY in OWNER RULES; ordinary factual answers need no explanation. Never repeat that disclaimer in explanation. Ask no more than one question: the server supplies the next question, so explanation contains no questions. action classifies explicit consent/refusal to the current flow offer; never infer consent from silence, a clinical fact or an unrelated question. summarize only if explicitly asked to finish, review or prepare a referral early. At city/country stages, location is the requested city/country only; do not extract it as a patient finding. specialty=head_neck only when explicitly requested, otherwise oral. After the interview is complete or an early summary is requested, synthesize findings and discuss possible compatible alterations with uncertainty, without the word diagnosis or a definitive conclusion. assessment_status=compatible only with sufficient stated findings AND explicit source support. For every possibility supply supporting_keys and an exact basis_excerpt from OWNER RULES, and use a Portuguese source label explicitly present in OWNER RULES (not gallery labels). Do not use outside knowledge to fill missing compatibility criteria. If the rules lack support use no_match; if facts are insufficient use insufficient. For collecting use empty possibilities. Explain limitations and unknowns clearly; no matching possibility does NOT exclude a serious alteration. Images do not determine compatibility. Never invent findings or provider names. Write explanation, values and reasons in selected language.'
     schema=Extraction.model_json_schema()
     def strict_schema(node):
         if isinstance(node,dict):
@@ -271,13 +272,18 @@ async def chat(case_id:str,data:Turn,request:Request):
     raw=await model([{'role':'system','content':instruction},{'role':'user','content':json.dumps({'language':case['language'],'fields':BY_KEY,'facts':case['facts'],'pending':case['pending'],'flow':flow,'assessment':case.get('assessment'),'last_messages':case['history'][-12:],'message':data.message},ensure_ascii=False)}],schema)
     try:reply=Extraction.model_validate(raw)
     except ValueError:raise HTTPException(502,'Resposta inválida. Tente novamente.')
+    clarification=reply.needs_clarification or bool(re.search(r"(?i)(não (entendi|compreendi|entendo)|pode (me )?explicar|como assim|o que significa|como registrar|como (devo |posso )?responder|don.t understand|do not understand|no entiendo|no comprend|what does .* mean)",data.message))
+    if clarification:
+        reply.updates=[];reply.action='none';reply.location=''
+    # Generated questions are never repeated alongside the server-controlled question.
+    explanation=' '.join(part.strip() for part in re.split(r'(?<=[.!?])\s+|\n+',reply.explanation) if part.strip() and '?' not in part)
     for u in reply.updates:
         if u.key not in BY_KEY:raise HTTPException(502,'Campo inválido. Nenhum dado foi salvo.')
         case['facts'][u.key]=u.value
     pending=next_field(case['facts']);case['pending']=pending
     stage=flow['stage']
     refresh=bool(reply.updates) and stage!='collect'
-    summarize=reply.action=='summarize' or refresh or (stage=='collect' and not pending)
+    summarize=reply.action=='summarize' or refresh or (stage=='collect' and not pending and not clarification)
     if summarize:
         accepted=[]
         source=(ROOT/'knowledge/original_rules.txt').read_text()
@@ -293,13 +299,13 @@ async def chat(case_id:str,data:Turn,request:Request):
         if accepted:
             translated_names=await translate({str(i):x['label'] for i,x in enumerate(accepted)},case['language'])
             narrative+='\n'+ '\n'.join(translated_names[str(i)]+': '+x['reason'] for i,x in enumerate(accepted))
-        if reply.explanation and not (reply.possibilities and len(accepted)<len(reply.possibilities)):narrative+='\n\n'+reply.explanation
+        if explanation and not (reply.possibilities and len(accepted)<len(reply.possibilities)):narrative+='\n\n'+explanation
         case['assessment']={'status':outcome,'possibilities':accepted,'text':narrative}
         case['flow']={'stage':'referral_offer','referral_ready':False}
         message=narrative+'\n\n'+labels['offer']
     elif stage=='collect':
-        question=(await translate({'question':BY_KEY[pending]['question']},case['language']))['question']
-        message=(reply.explanation+'\n\n' if reply.explanation else '')+question
+        question=(await translate({'question':BY_KEY[pending]['question'] if pending else 'Podemos esclarecer sua dúvida antes de sintetizar os achados.'},case['language']))['question']
+        message=(explanation+'\n\n' if clarification and explanation else '')+question
     else:
         texts={'services_offer':'Deseja localizar serviços especializados em uma cidade e país de sua escolha?','city':'Em qual cidade deseja buscar um serviço?','country':'Em qual país fica essa cidade?','ready':'A busca está pronta abaixo. Os resultados são externos e não verificados pelo ALIA. Podemos continuar a conversa para dúvidas ou complementações.','continue':'Podemos continuar a conversa para esclarecer dúvidas ou complementar os achados.'}
         if stage=='referral_offer' and reply.action in ('yes','no'):
@@ -318,7 +324,7 @@ async def chat(case_id:str,data:Turn,request:Request):
         else:
             message={'referral_offer':'Deseja gerar um encaminhamento para avaliação em Estomatologia/Medicina Oral?','services_offer':texts['services_offer'],'city':texts['city'],'country':texts['country']}.get(stage,texts['continue'])
         message=(await translate({'message':message},case['language']))['message']
-        if reply.explanation:message=reply.explanation+'\n\n'+message
+        if clarification and explanation:message=explanation+'\n\n'+message
     case['history'] += [{'role':'user','content':data.message},{'role':'assistant','content':message}]
     return save_case(case,s['user_id'],data.version)
 class Edit(BaseModel):
