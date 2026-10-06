@@ -623,10 +623,10 @@ def test_lichen_planus_named_with_unknown_contact_and_medication_context(client,
  mock_reply(monkeypatch,action='summarize',assessment_status='compatible',possibilities=[named_candidate('oral_lichen_planus',['reticular_pattern','distribution'],'Estrias brancas em rede com distribuição bilateral e simétrica favorecem essa possibilidade; o contexto de medicamentos e contato ainda precisa ser esclarecido.')])
  case=conversation(client,case,'Sintetize')
  assert [x['label'] for x in case['assessment']['possibilities']]==['Líquen plano oral']
- assert 'Possibilidades a avaliar: Líquen plano oral.' in case['history'][-1]['content']
+ assert 'Características que podem ser compatíveis com: Líquen plano oral.' in case['history'][-1]['content']
  assert 'estomatologista' in case['history'][-1]['content']
  assert 'não uma confirmação' in case['assessment']['text']
- assert 'Possibilidade a avaliar: Líquen plano oral:' in case['assessment']['text']
+ assert 'Características que podem ser compatíveis com Líquen plano oral:' in case['assessment']['text']
  assert 'não significa que ela esteja presente' in case['assessment']['text']
  assert 'nem estimar sua probabilidade' in case['assessment']['text']
  assert 'Deseja' not in case['history'][-1]['content']
@@ -789,3 +789,14 @@ def test_verified_cross_field_point_lists_related_records(client,monkeypatch):
  case=conversation(client,case,'Sintetize')
  assert case['assessment']['review_points'][0]['kind']=='inconsistency'
  assert case['assessment']['review_points'][0]['supporting_keys']==['color','intraoral']
+
+
+def test_current_ui_and_assets_are_not_served_from_stale_cache():
+ c=TestClient(main.app)
+ for path in ['/','/static/app.js?v=alia-4.3','/static/style.css?v=alia-4.3']:
+  response=c.get(path)
+  assert response.status_code==200
+  assert response.headers['cache-control']=='no-store'
+ html=c.get('/').text
+ assert 'documentHypotheses' not in html
+ assert 'v=alia-4.3' in html

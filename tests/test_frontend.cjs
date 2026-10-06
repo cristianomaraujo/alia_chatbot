@@ -54,12 +54,12 @@ function documentSetup(){
  $('referralBody').value='Descrição revisada pelo profissional';$('reason').value='Avaliação em Estomatologia';
  return {ctx,$};
 }
-test('referral excludes all internal reflection and hypotheses by default',()=>{
+test('referral excludes clinical correspondences even with a legacy selection',()=>{
  const {ctx}=documentSetup();const html=ctx.referralDocument();
  assert.match(html,/Descrição revisada pelo profissional/);
  assert.doesNotMatch(html,/REFLEXAO_PRIVADA|PROCEDIMENTO_INTERNO|Líquen plano|Reação liquenoide/);
  ctx.selectedHypotheses.add('oral_lichen_planus');const selected=ctx.referralDocument();
- assert.match(selected,/Líquen plano oral/);assert.doesNotMatch(selected,/Reação liquenoide|REFLEXAO_PRIVADA|PROCEDIMENTO_INTERNO/);
+ assert.doesNotMatch(selected,/Líquen plano oral|Reação liquenoide|REFLEXAO_PRIVADA|PROCEDIMENTO_INTERNO/);
 });
 test('edited referral text and local identity are escaped before rendering',()=>{
  const {ctx,$}=documentSetup();$('referralBody').value='<script>danger()</script>';$('patient').value='<img src=x onerror=danger()>';
@@ -69,4 +69,10 @@ test('referral distinguishes an unassessed examination from an absent finding',(
  const {ctx}=documentSetup();
  const body=ctx.buildReferralBody({active_fields:['complaint','intraoral'],fact_meta:{complaint:{state:'reported',origin:'professional'},intraoral:{state:'not_assessed'}}},{complaint:'Dor',intraoral:'Não avaliado'});
  assert.match(body,/Queixa: Dor/);assert.match(body,/Exame intraoral \(not_assessed\)/);assert.doesNotMatch(body,/absent/);
+});
+
+test('professional clinical appraisal is not copied into automatic referral findings',()=>{
+ const {ctx}=documentSetup();
+ const body=ctx.buildReferralBody({active_fields:['complaint','clinical_suspicion'],fact_meta:{complaint:{state:'reported'},clinical_suspicion:{state:'reported'}}},{complaint:'Dor',clinical_suspicion:'APPRAISAL_INTERNAL'});
+ assert.match(body,/Queixa: Dor/);assert.doesNotMatch(body,/APPRAISAL_INTERNAL/);
 });
