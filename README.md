@@ -8,6 +8,7 @@ Assessment of Lesions with Intelligent Assistance. Text-only AI support for coll
 - Encrypted saved cases, one lesion per case, guided collection or a described case with guidance, field states, original-message provenance, explicit contradiction resolution, editable findings and resumption.
 - Language-name selector; automatic UI and conversation translations. Language availability does not imply validated clinical performance.
 - Sixteen supplied AI-generated illustrations, optionally consulted by the professional. A separate consultation page displays the illustrations without selection or a triage step. No photo upload or image analysis. Illustration labels are never used as patient findings.
+- Final assistant workspace with an editable referral draft and a separate clinical review panel: named hypotheses, record limitations, confirmed record conflicts, checked cross-field concerns and conditional, source-linked evaluation suggestions. Desktop uses two columns; mobile uses two tabs. Hypotheses enter the referral only through explicit unchecked-by-default selections.
 - Reviewed referral printable from the browser or saved using the browser's PDF option. Available through the Generate report button after synthesis, with professional review required before the document opens. Optional international registration field; patient identification stays in the referral form and is not transmitted to the API/model.
 - External Google Maps search for Estomatologia using city and country only. The Search professionals button is shown alongside Generate report immediately after synthesis; locations are entered in a separate browser form and are not sent to the model. No provider database, endorsement or validation of search results.
 
@@ -75,3 +76,12 @@ The clinical source and bibliography files remain unchanged. The runtime source 
 Evaluation export is an authenticated, owner-scoped JSON download containing conversation, structured record, changes, model execution metadata and pipeline/source/code/interface fingerprints. Provider model IDs and usage are captured when real calls run; simulated calls have no provider telemetry. Referral identities entered only in the browser are not part of this export. Free text must be reviewed and deidentified before sharing.
 
 Final synthesis uses additional model calls and may increase latency and cost. Demonstration budgets count those calls. Automated source consistency checks reduce some errors but do not establish correctness, clinical safety or language equivalence. There is no claim of live-model or clinical validation.
+
+
+## Clinical review and referral boundary
+
+Pipeline 4.2 stores source-linked review points separately from the clinical record and full synthesis. A review point must refer to an existing rule and recorded fields, then pass the model consistency check. Unknown and unassessed fields can support a request to clarify or examine, never an abnormality. Cross-field concerns require two assessed fields and semantic confirmation; same-field conflicts still block synthesis/export until resolved. Suggestions do not add treatment, test catalogs, biopsy techniques or automatic procedure orders.
+
+The final chat turn is brief; the detailed assistant panel retains hypotheses, limitations, related fields and source pages. Findings can be corrected from that panel, invalidating synthesis and review. Previous-pipeline syntheses require regeneration.
+
+The printable referral contains local identification, an editable clinical description, the professional-reviewed referral reason and only the hypothesis names explicitly selected by the professional. The full AI synthesis, clinical review points and source discussions are not copied into the document. Draft edits and selections are browser-memory only, do not alter the structured case and are not part of research export. Changed structured findings rebuild the draft. Export still requires record review and a current version check; printing additionally requires confirmation of the displayed document version. Automated tests and browser tests use simulated model responses and are not clinical validation.

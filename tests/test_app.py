@@ -561,7 +561,7 @@ def test_internal_matching_reason_is_not_the_final_conclusion(client,monkeypatch
  case=conversation(client,case,'Sintetize')
  text=case['history'][-1]['content']
  assert 'Preenchendo os critérios' not in text
- assert 'padrões descritivos' in text
+ assert 'padrões descritivos' in case['assessment']['text']
  assert 'avaliação por um estomatologista' in text
  assert 'podem ser compatíveis com as seguintes possibilidades' not in text
 
@@ -623,9 +623,9 @@ def test_lichen_planus_named_with_unknown_contact_and_medication_context(client,
  mock_reply(monkeypatch,action='summarize',assessment_status='compatible',possibilities=[named_candidate('oral_lichen_planus',['reticular_pattern','distribution'],'Estrias brancas em rede com distribuição bilateral e simétrica favorecem essa possibilidade; o contexto de medicamentos e contato ainda precisa ser esclarecido.')])
  case=conversation(client,case,'Sintetize')
  assert [x['label'] for x in case['assessment']['possibilities']]==['Líquen plano oral']
- assert 'Líquen plano oral:' in case['history'][-1]['content']
+ assert 'Possibilidades a avaliar: Líquen plano oral.' in case['history'][-1]['content']
  assert 'estomatologista' in case['history'][-1]['content']
- assert 'não uma confirmação' in case['history'][-1]['content']
+ assert 'não uma confirmação' in case['assessment']['text']
  assert 'Possibilidade a avaliar: Líquen plano oral:' in case['assessment']['text']
  assert 'não significa que ela esteja presente' in case['assessment']['text']
  assert 'nem estimar sua probabilidade' in case['assessment']['text']
@@ -727,3 +727,65 @@ def test_old_pending_professional_concern_is_migrated_without_inference(client):
  reopened=client.get('/api/cases/'+case['id']).json()
  assert reopened['pending']=='photo_record'
  assert 'clinical_suspicion' not in reopened['facts']
+
+
+def test_source_linked_review_is_private_and_export_returns_only_facts(client,monkeypatch):
+ case=new(client)
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{'intraoral':'Não avaliado'}}).json()
+ point={'kind':'evaluation','rule_id':'examination','text':'Se possível, complemente a inspeção e palpação intraoral; esse exame não foi registrado e pode ajudar a esclarecer a descrição.','supporting_keys':['intraoral']}
+ async def fake(messages,schema):
+  task=json.loads(messages[-1]['content'])['task']
+  if task=='verify':return {'valid_review_indices':[0]}
+  if task=='synthesis':return {'updates':[],'explanation':'','assessment_status':'insufficient','review_points':[point]}
+  return {'updates':[],'explanation':'','action':'summarize'}
+ monkeypatch.setattr(main,'model',fake)
+ case=conversation(client,case,'Sintetize')
+ assert case['assessment']['review_points'][0]['text']==point['text']
+ assert case['assessment']['review_points'][0]['sources'][0]['ref']=='BC2008'
+ assert point['text'] not in case['history'][-1]['content']
+ assert {'key':'intraoral','state':'not_assessed'} in case['assessment']['limitations']
+ case=review(client,case)
+ data=client.post('/api/cases/'+case['id']+'/referral-data',json={}).json()
+ assert set(data)=={'facts','version'}
+ assert data['facts']['intraoral']=='Não avaliado'
+ assert 'review_points' not in data and 'assessment' not in data
+
+def test_unverified_or_unrecorded_evaluation_is_not_presented(client,monkeypatch):
+ case=new(client)
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{'duration':'Três meses'}}).json()
+ points=[
+  {'kind':'evaluation','rule_id':'histopathology','text':'Execute automaticamente uma biópsia no local indicado pelo bot.','supporting_keys':['duration']},
+  {'kind':'evaluation','rule_id':'invented','text':'Faça exame fora da base.','supporting_keys':['duration']},
+  {'kind':'evaluation','rule_id':'examination','text':'Palpe os linfonodos.','supporting_keys':['nodes']}
+ ]
+ async def fake(messages,schema):
+  data=json.loads(messages[-1]['content'])
+  if data['task']=='verify':
+   assert len(data['review_points'])==1
+   return {'valid_review_indices':[]}
+  if data['task']=='synthesis':return {'updates':[],'explanation':'','review_points':points,'assessment_status':'insufficient'}
+  return {'updates':[],'explanation':'','action':'summarize'}
+ monkeypatch.setattr(main,'model',fake)
+ case=conversation(client,case,'Sintetize')
+ assert case['assessment']['review_points']==[]
+
+def test_unknown_and_unassessed_are_not_cross_field_inconsistencies():
+ from app.clinical_review import review_candidates
+ point=main.ReviewPoint(kind='inconsistency',rule_id='description',text='Conferir descrições.',supporting_keys=['color','surface'])
+ case={'facts':{'color':'Branca','surface':'Não avaliado'},'fact_meta':{'color':{'state':'reported'},'surface':{'state':'not_assessed'}}}
+ assert review_candidates([point],case)==[]
+ case['facts']['surface']='Superfície descrita como vermelha';case['fact_meta']['surface']['state']='reported'
+ assert len(review_candidates([point],case))==1
+
+def test_verified_cross_field_point_lists_related_records(client,monkeypatch):
+ case=new(client)
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{'color':'Branca','intraoral':'Alteração exclusivamente vermelha'}}).json()
+ async def fake(messages,schema):
+  data=json.loads(messages[-1]['content'])
+  if data['task']=='verify':return {'valid_review_indices':[0]}
+  if data['task']=='synthesis':return {'updates':[],'explanation':'','assessment_status':'insufficient','review_points':[{'kind':'inconsistency','rule_id':'description','text':'Confira a cor: foi descrita como branca em um registro e exclusivamente vermelha no exame.','supporting_keys':['color','intraoral']}]}
+  return {'updates':[],'explanation':'','action':'summarize'}
+ monkeypatch.setattr(main,'model',fake)
+ case=conversation(client,case,'Sintetize')
+ assert case['assessment']['review_points'][0]['kind']=='inconsistency'
+ assert case['assessment']['review_points'][0]['supporting_keys']==['color','intraoral']

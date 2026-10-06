@@ -44,3 +44,29 @@ test('source pages render from new arrays and earlier saved string values',()=>{
  assert.equal(ctx.sourcePageText(['3','6']),'3, 6');
  assert.equal(ctx.sourcePageText(undefined),'');
 });
+
+function documentSetup(){
+ const nodes={};const $=id=>nodes[id]??={value:''};
+ const ctx={$,current:{id:'12345678-case',active_fields:['complaint'],facts:{complaint:'Dor'},fact_meta:{complaint:{state:'reported'}},assessment:{text:'REFLEXAO_PRIVADA',review_points:[{text:'PROCEDIMENTO_INTERNO'}],possibilities:[{kind:'hypothesis',pattern_id:'oral_lichen_planus',label:'Líquen plano oral'},{kind:'hypothesis',pattern_id:'lichenoid_contact',label:'Reação liquenoide de contato'}]}},selectedHypotheses:new Set(),demoMode:false,language:'pt',t:(_k,f)=>f,escape:s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),catalog:{fields:{complaint:{label:'Queixa'},intraoral:{label:'Exame intraoral'}}},stateLabel:s=>s,originLabel:s=>s};
+ vm.createContext(ctx);
+ const lines=fs.readFileSync('app/static/app.js','utf8').split('\n');
+ vm.runInContext(lines.filter(x=>/^function (referralDocument|possibilityName|buildReferralBody)\(/.test(x)).join('\n'),ctx);
+ $('referralBody').value='Descrição revisada pelo profissional';$('reason').value='Avaliação em Estomatologia';
+ return {ctx,$};
+}
+test('referral excludes all internal reflection and hypotheses by default',()=>{
+ const {ctx}=documentSetup();const html=ctx.referralDocument();
+ assert.match(html,/Descrição revisada pelo profissional/);
+ assert.doesNotMatch(html,/REFLEXAO_PRIVADA|PROCEDIMENTO_INTERNO|Líquen plano|Reação liquenoide/);
+ ctx.selectedHypotheses.add('oral_lichen_planus');const selected=ctx.referralDocument();
+ assert.match(selected,/Líquen plano oral/);assert.doesNotMatch(selected,/Reação liquenoide|REFLEXAO_PRIVADA|PROCEDIMENTO_INTERNO/);
+});
+test('edited referral text and local identity are escaped before rendering',()=>{
+ const {ctx,$}=documentSetup();$('referralBody').value='<script>danger()</script>';$('patient').value='<img src=x onerror=danger()>';
+ const html=ctx.referralDocument();assert.doesNotMatch(html,/<script>|<img/);assert.match(html,/&lt;script&gt;/);assert.match(html,/&lt;img/);
+});
+test('referral distinguishes an unassessed examination from an absent finding',()=>{
+ const {ctx}=documentSetup();
+ const body=ctx.buildReferralBody({active_fields:['complaint','intraoral'],fact_meta:{complaint:{state:'reported',origin:'professional'},intraoral:{state:'not_assessed'}}},{complaint:'Dor',intraoral:'Não avaliado'});
+ assert.match(body,/Queixa: Dor/);assert.match(body,/Exame intraoral \(not_assessed\)/);assert.doesNotMatch(body,/absent/);
+});

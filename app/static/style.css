@@ -34,3 +34,72 @@ html[dir=rtl] .sidebar{left:auto;right:0}html[dir=rtl] main{margin-left:0;margin
 
 .chat-error{margin:0 0 12px;padding:12px 16px;border:1px solid #d8ad9c;border-radius:10px;background:#fff3ee;color:#8a4030;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
 .guest-history-hint{font-size:12px;line-height:1.65;margin:10px 0 0}#demoPanel{background:#edf3ef;border:1px solid #d5e1d8;border-radius:12px;padding:16px 20px}#demoPanel strong{font-size:13px}#demoPanel p{font-size:13px;color:#526b5e;margin:8px 0 0}
+
+/* Final assistant workspace: a document and a distinct clinical reflection. */
+.clinical-tabs{display:flex;gap:5px;align-items:center;padding:5px;border-radius:13px;background:#eaf0ec;width:fit-content;max-width:100%;margin-bottom:22px}
+.clinical-tabs button{background:transparent;color:#6e8478;font-size:12px;padding:11px 17px;font-weight:500;border-radius:9px}
+.clinical-tabs button[aria-selected=true]{background:#fff;color:#164c3f;box-shadow:0 2px 8px #13473508}
+.clinical-layout>.assistant-panel{display:none;grid-column:1/-1;min-width:0}
+.clinical-layout[data-pane=assistant]>.assistant-panel{display:block}
+.clinical-layout[data-pane=assistant]>.chat-card,.clinical-layout[data-pane=assistant]>.facts-card{display:none}
+.assistant-heading{display:flex;align-items:center;justify-content:space-between;gap:26px;padding:10px 0 24px}
+.assistant-heading h2{font-size:25px;letter-spacing:-.7px;font-weight:500;margin:10px 0}
+.assistant-heading p{font-size:13px;max-width:620px;margin:0}
+.assistant-heading>.secondary{flex-shrink:0;font-size:12px;background:transparent}
+.assistant-columns{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:24px;align-items:start}
+.referral-draft,.clinical-reflection{min-width:0;border-radius:20px;padding:30px;border:1px solid #dce7df}
+.referral-draft{background:#fff;box-shadow:0 5px 25px #184c3505}
+.clinical-reflection{background:#eff4f1}
+.panel-heading{display:flex;gap:15px;align-items:center}
+.panel-index{width:34px;height:34px;display:grid;place-items:center;flex-shrink:0;border-radius:10px;background:#eaf1ed;color:#719084;font-size:11px}
+.clinical-reflection .panel-index{background:#dfeae3}
+.panel-heading .eyebrow{font-size:9px;letter-spacing:1.5px}
+.panel-heading h3{font-weight:500;letter-spacing:-.3px;font-size:20px;margin:7px 0 0}
+.panel-description{font-size:12px;line-height:1.8;margin:18px 0 24px;color:#73897c}
+.document-identification{border-top:1px solid #e3ebe5;border-bottom:1px solid #e3ebe5;padding:16px 0;margin-bottom:24px}
+.document-identification summary,.document-preview summary{font-size:12px;font-weight:600;cursor:pointer;color:#3c6655;line-height:1.7}
+.document-identification .referral-fields{gap:7px 14px}
+.referral-fields label{font-size:11px;line-height:1.6}
+.referral-fields input,.referral-fields textarea{font-size:12px;margin-top:6px;padding:10px}
+.referral-draft>label{font-size:12px;font-weight:600;margin-bottom:10px}
+#referralBody{min-height:310px;resize:vertical;font-size:12px;line-height:1.8;padding:18px;border-radius:12px;border-color:#dae4dc;background:#fbfdfb}
+.draft-local-hint{font-size:10px;line-height:1.8;margin:10px 0 25px}
+.hypothesis-selection{min-width:0;border:1px solid #dce6df;border-radius:12px;padding:14px 17px;margin:0 0 22px}
+.hypothesis-selection legend{font-size:11px;padding:0 6px;font-weight:600}
+.hypothesis-selection p{font-size:11px;margin:3px 0 12px}
+#documentHypotheses label{display:flex;gap:10px;align-items:flex-start;font-size:12px;line-height:1.6;margin:10px 0}
+#documentHypotheses input{width:16px;height:16px;margin:2px 0;flex:0 0 16px;accent-color:var(--green)}
+.document-preview{padding:15px 0;border-top:1px solid #e5ece6}
+.document-preview .referral-document{padding:10px 0;overflow-wrap:anywhere}
+.draft-action{display:flex;gap:16px;align-items:center;padding-top:20px;margin-top:8px;border-top:1px solid #e4ece6}
+.draft-action button{font-size:12px;flex-shrink:0}
+.draft-action small{font-size:10px;max-width:170px;line-height:1.7}
+.clinical-reflection section,.clinical-reflection>#reflectionConflicts{margin-bottom:26px}
+.clinical-reflection h4{font-size:12px;font-weight:600;letter-spacing:.1px;margin:0 0 12px}
+.clinical-reflection h5{font-size:15px;font-weight:600;margin:0 0 10px}
+.clinical-reflection p{font-size:12px;line-height:1.85;margin:8px 0 12px;overflow-wrap:anywhere}
+.reflection-caution{font-size:11px!important;color:#798e82}
+.review-point{background:#ffffffc9;border:1px solid #e0e9e3;border-radius:13px;padding:19px;margin:12px 0}
+.hypothesis-point{border-inline-start:3px solid #7fa492}
+.needs-confirmation{background:#fbf7ee;border-color:#e4d5b9}
+.point-label{display:block;font-size:10px;color:#7c887f;letter-spacing:.2px;line-height:1.6;margin-bottom:8px}
+.review-linked-fields{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+.review-field-link{background:#eaf1ec;color:#547363;font-size:10px;font-weight:500;padding:7px 9px;border-radius:6px;max-width:100%;text-align:start;line-height:1.6}
+.review-field-link:hover{background:#dae8df}
+.reflection-source{margin-top:17px;border-top:1px solid #e6ece7;padding-top:12px}
+.reflection-source summary{font-size:10px;cursor:pointer;color:#7c9184}
+.reflection-source p{font-size:10px;color:#7b8d81}
+.reflection-source a{display:block;font-size:10px;color:#48715e;margin:12px 0;line-height:1.8;overflow-wrap:anywhere}
+.limitation-list{font-size:11px;background:#ffffff90;border:1px solid #e0e9e3;border-radius:12px;padding:14px}
+.limitation-list>summary{cursor:pointer;color:#718575;line-height:1.8}
+.review-limitation{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid #e7eee8;padding:10px 0}
+.review-limitation:first-of-type{margin-top:14px}
+.review-limitation .state-badge{white-space:normal;max-width:100px;flex-shrink:0}
+.reflection-explanation{border-top:1px solid #dae6dd;padding-top:14px}
+.document-body{overflow-wrap:anywhere}
+#assistantStale{font-size:12px;line-height:1.7;margin-bottom:22px}
+@media(max-width:1150px){.assistant-columns{gap:18px}.referral-draft,.clinical-reflection{padding:23px}.panel-heading h3{font-size:18px}}
+@media(max-width:900px){.assistant-columns{grid-template-columns:1fr}.clinical-tabs{width:100%}.clinical-tabs button{flex:1;padding:10px}.assistant-heading{align-items:flex-start}.assistant-heading h2{font-size:23px}.referral-draft,.clinical-reflection{padding:25px}.clinical-layout[data-pane=assistant]>.assistant-panel{display:block}}
+@media(max-width:650px){.clinical-tabs{gap:2px;margin-bottom:15px}.clinical-tabs button{font-size:10px;line-height:1.6;padding:9px 7px}.assistant-heading{flex-direction:column;gap:17px;padding:7px 0 22px}.assistant-heading h2{font-size:22px;line-height:1.35}.assistant-heading p{font-size:12px}.referral-draft,.clinical-reflection{padding:21px 18px;border-radius:17px}.assistant-columns{gap:16px}.panel-heading{gap:12px}.panel-heading h3{font-size:18px}.panel-description{font-size:11px;margin-bottom:19px}.review-point{padding:17px 15px}.referral-fields{grid-template-columns:1fr}#referralBody{min-height:300px}.draft-action{gap:12px}.draft-action small{font-size:9px}.clinical-reflection p{font-size:11px}.review-limitation .state-badge{max-width:83px}.review-field-link{font-size:10px}}
+.assistant-mobile-tabs,.mobile-draft-action{display:none}
+@media(max-width:900px){.assistant-mobile-tabs{display:flex;gap:5px;border:1px solid #dce7df;background:#eaf0ec;border-radius:12px;padding:5px;margin:0 0 18px}.assistant-mobile-tabs button{flex:1;background:transparent;color:#718578;font-size:12px;padding:11px;border-radius:8px;font-weight:500}.assistant-mobile-tabs button[aria-selected=true]{background:#fff;color:#184e3c;box-shadow:0 2px 6px #15472c06}.assistant-panel[data-view=reflection] .referral-draft{display:none}.assistant-panel[data-view=document] .clinical-reflection{display:none}.mobile-draft-action{display:block;width:100%;font-size:12px;margin-top:22px}}
