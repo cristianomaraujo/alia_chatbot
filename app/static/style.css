@@ -103,3 +103,21 @@ html[dir=rtl] .sidebar{left:auto;right:0}html[dir=rtl] main{margin-left:0;margin
 @media(max-width:650px){.clinical-tabs{gap:2px;margin-bottom:15px}.clinical-tabs button{font-size:10px;line-height:1.6;padding:9px 7px}.assistant-heading{flex-direction:column;gap:17px;padding:7px 0 22px}.assistant-heading h2{font-size:22px;line-height:1.35}.assistant-heading p{font-size:12px}.referral-draft,.clinical-reflection{padding:21px 18px;border-radius:17px}.assistant-columns{gap:16px}.panel-heading{gap:12px}.panel-heading h3{font-size:18px}.panel-description{font-size:11px;margin-bottom:19px}.review-point{padding:17px 15px}.referral-fields{grid-template-columns:1fr}#referralBody{min-height:300px}.draft-action{gap:12px}.draft-action small{font-size:9px}.clinical-reflection p{font-size:11px}.review-limitation .state-badge{max-width:83px}.review-field-link{font-size:10px}}
 .assistant-mobile-tabs,.mobile-draft-action{display:none}
 @media(max-width:900px){.assistant-mobile-tabs{display:flex;gap:5px;border:1px solid #dce7df;background:#eaf0ec;border-radius:12px;padding:5px;margin:0 0 18px}.assistant-mobile-tabs button{flex:1;background:transparent;color:#718578;font-size:12px;padding:11px;border-radius:8px;font-weight:500}.assistant-mobile-tabs button[aria-selected=true]{background:#fff;color:#184e3c;box-shadow:0 2px 6px #15472c06}.assistant-panel[data-view=reflection] .referral-draft{display:none}.assistant-panel[data-view=document] .clinical-reflection{display:none}.mobile-draft-action{display:block;width:100%;font-size:12px;margin-top:22px}}
+
+/* Each main tab opens its own workspace at every viewport width. */
+.clinical-layout{grid-template-columns:minmax(0,1fr)}
+.clinical-layout[data-pane=conversation]>.facts-card,.clinical-layout[data-pane=record]>.chat-card{display:none}
+.clinical-layout[data-pane=record]>.facts-card{grid-column:1/-1;max-height:none;overflow:visible;background:#fff;border:1px solid #dce7df;padding:30px;border-radius:20px}
+.clinical-layout[data-pane=record] .facts-heading h2{font-size:23px;font-weight:500}
+.clinical-layout[data-pane=record] .facts-heading span{max-width:none;font-size:11px}
+.clinical-layout[data-pane=record] .record-stats{max-width:680px}
+.clinical-layout[data-pane=record] .record-stats>div{background:#eff4f1;padding:14px}
+.clinical-layout[data-pane=record] #facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 28px;align-items:start}
+.clinical-layout[data-pane=record] .fact-group{margin:0;padding:18px;border:1px solid #e1e9e3;border-radius:13px;min-width:0}
+.clinical-layout[data-pane=record] .fact-group summary{font-size:13px;padding-bottom:12px}
+.clinical-layout[data-pane=record] .fact{padding:14px 0}
+.clinical-layout[data-pane=record] .fact span{overflow-wrap:anywhere}
+.clinical-layout[data-pane=record] .fact-group .fact:last-child{border-bottom:0}
+.clinical-layout[data-pane=record] .summary-panel{border:1px solid #e1e9e3}
+@media(max-width:1100px){.clinical-layout[data-pane=record] #facts{grid-template-columns:1fr}}
+@media(max-width:650px){.clinical-layout[data-pane=record]>.facts-card{padding:20px 16px;border-radius:17px}.clinical-layout[data-pane=record] .facts-heading h2{font-size:20px}.clinical-layout[data-pane=record] .facts-heading span{max-width:90px;font-size:10px}.clinical-layout[data-pane=record] .fact-group{padding:15px}.clinical-layout[data-pane=record] #facts{gap:14px}.clinical-layout[data-pane=record] .record-stats>div{padding:10px}}
