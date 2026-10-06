@@ -448,7 +448,7 @@ def test_attention_verification_is_reused_only_for_unchanged_evidence(client,mon
 
 def test_conditional_fields_and_guidance(client):
  case=client.get('/api/cases/'+new(client)['id']).json()
- assert 'clinical_suspicion' in case['active_fields']
+ assert 'clinical_suspicion' not in case['active_fields']
  assert 'reticular_pattern' not in case['active_fields']
  assert 'cancer_therapy' not in case['active_fields']
  assert main.BY_KEY['size']['guidance']
@@ -626,6 +626,9 @@ def test_lichen_planus_named_with_unknown_contact_and_medication_context(client,
  assert 'Líquen plano oral:' in case['history'][-1]['content']
  assert 'estomatologista' in case['history'][-1]['content']
  assert 'não uma confirmação' in case['history'][-1]['content']
+ assert 'Possibilidade a avaliar: Líquen plano oral:' in case['assessment']['text']
+ assert 'não significa que ela esteja presente' in case['assessment']['text']
+ assert 'nem estimar sua probabilidade' in case['assessment']['text']
  assert 'Deseja' not in case['history'][-1]['content']
  assert case['assessment']['possibilities'][0]['sources'][0]['pdf_pages']==['4–9, 15–21']
 
@@ -699,3 +702,28 @@ def test_final_prose_cannot_reintroduce_action_questions(client,monkeypatch):
  case=conversation(client,case,'Sintetize')
  assert 'Os dados ainda são limitados.' in case['assessment']['text']
  assert '?' not in case['history'][-1]['content'] and 'Deseja' not in case['history'][-1]['content']
+
+
+def test_optional_professional_concern_does_not_block_or_become_negative(client):
+ case=new(client)
+ facts={k:'Não informado' for k in main.active_keys({}) if k!='photo_record'}
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':facts}).json()
+ assert case['pending']=='photo_record'
+ assert 'clinical_suspicion' not in case['facts']
+ assert 'clinical_suspicion' not in case['fact_meta']
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{'clinical_suspicion':'Preocupação clínica identificada no exame'}}).json()
+ assert 'clinical_suspicion' in case['active_fields']
+ assert case['fact_meta']['clinical_suspicion']['state']=='reported'
+ assert case['pending']=='photo_record'
+
+def test_old_pending_professional_concern_is_migrated_without_inference(client):
+ case=new(client)
+ facts={k:'Não informado' for k in main.active_keys({}) if k!='photo_record'}
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':facts}).json()
+ with main.db() as db:
+  row=db.execute('SELECT payload FROM cases WHERE id=?',(case['id'],)).fetchone()
+  stored=main.dec(row['payload']);stored['pending']='clinical_suspicion'
+  db.execute('UPDATE cases SET payload=? WHERE id=?',(main.enc(stored),case['id']))
+ reopened=client.get('/api/cases/'+case['id']).json()
+ assert reopened['pending']=='photo_record'
+ assert 'clinical_suspicion' not in reopened['facts']

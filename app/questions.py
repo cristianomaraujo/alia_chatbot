@@ -42,13 +42,13 @@ EXTRA_FIELDS=[
 ('distribution','Contexto liquenoide','Como é a distribuição da alteração: unilateral ou bilateral, simétrica ou assimétrica?'),
 ('medication_timing','Contexto liquenoide','Existe relação temporal entre o início da alteração e um medicamento ou produto com aromatizante, como canela?'),
 ('contact_relation','Contexto liquenoide','A alteração coincide com contato com restauração, material odontológico ou local de colocação de tabaco sem fumaça ou betel?'),
-('clinical_suspicion','Avaliação profissional','Pelo exame realizado, você considera a alteração clinicamente suspeita de uma condição potencialmente maligna ou maligna?'),
+('clinical_suspicion','Avaliação profissional','Há alguma preocupação clínica, identificada por você no exame, que queira registrar para orientar o encaminhamento?'),
 ]
 EXTRA_LABELS=['Padrão reticular','Distribuição e simetria','Relação temporal com medicamentos ou produtos','Relação de contato local','Suspeita clínica informada pelo profissional']
 FIELDS=FIELDS[:-1]+EXTRA_FIELDS+[FIELDS[-1]]
 LABELS=LABELS[:-1]+EXTRA_LABELS+[LABELS[-1]]
 LICHENOID_KEYS={k for k,_,_ in EXTRA_FIELDS[:-1]}
-CONTEXTUAL_KEYS={'cancer_therapy','coating','odor'}
+CONTEXTUAL_KEYS={'cancer_therapy','coating','odor','clinical_suspicion'}
 BY_KEY={k:{'label':LABELS[i],'question':q,'phase':p,'context':'lichenoid' if k in LICHENOID_KEYS else 'contextual' if k in CONTEXTUAL_KEYS else 'general'} for i,(k,p,q) in enumerate(FIELDS)}
 GUIDANCE={
  'tobacco':('Registre tipo de tabaco, quantidade, frequência e duração quando conhecidos. Não estime dados que não foram informados.','history'),
@@ -64,7 +64,7 @@ GUIDANCE={
  'distribution':('Registre a distribuição da lesão principal e se há padrão semelhante do outro lado. Outras lesões continuam em triagens separadas.','lichenoid_context'),
  'medication_timing':('Informe a sequência temporal quando conhecida; não suspenda medicamento para responder ao ALIA.','lichenoid_context'),
  'contact_relation':('Registre a relação anatômica com o contato. Coincidência não prova causalidade e não justifica trocar restaurações por orientação do chatbot.','lichenoid_context'),
- 'clinical_suspicion':('Registre sua apreciação clínica, incluindo se não foi possível avaliá-la. Esse campo não é uma classificação gerada pelo modelo.','suspicious_referral'),
+ 'clinical_suspicion':('Registro opcional da apreciação do profissional. Não é necessário classificar a alteração para concluir a conversa. A ausência desse registro não significa ausência de suspeita; o modelo não deve preenchê-lo por inferência.','suspicious_referral'),
  'photo_record':('Informe apenas se o profissional realizou e guardou o registro. O modelo não recebe nem interpreta fotografias.','documentation'),
 }
 for key,(guide,rule) in GUIDANCE.items():BY_KEY[key].update({'guidance':guide,'rule_id':rule})
