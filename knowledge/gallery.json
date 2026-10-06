@@ -1,98 +1,104 @@
 [
   {
     "id": "F01",
-    "label": "Leucoplasia Oral",
-    "url": "/static/images/figure-01.jpeg",
+    "label": "Eritroleucoplasia oral 1",
+    "url": "/static/images/figure-01.jpeg?v=db4c7eed64b3",
     "ai_generated": true
   },
   {
     "id": "F02",
-    "label": "Leucoplasia Verrucosa Proliferativa em borda de língua",
-    "url": "/static/images/figure-02.jpeg",
+    "label": "Eritroleucoplasia oral 2",
+    "url": "/static/images/figure-02.jpeg?v=95de83bf7e08",
     "ai_generated": true
   },
   {
     "id": "F03",
-    "label": "Leucoplasia Verrucosa Proliferativa",
-    "url": "/static/images/figure-03.jpeg",
+    "label": "Eritroplasia oral",
+    "url": "/static/images/figure-03.jpeg?v=006489b2ae0e",
     "ai_generated": true
   },
   {
     "id": "F04",
-    "label": "Líquen plano",
-    "url": "/static/images/figure-04.jpeg",
+    "label": "Fibrose submucosa oral 1",
+    "url": "/static/images/figure-04.jpeg?v=bf083528acf0",
     "ai_generated": true
   },
   {
     "id": "F05",
-    "label": "Líquen plano generalizado",
-    "url": "/static/images/figure-05.jpeg",
+    "label": "Fibrose submucosa oral em paciente que faz uso de próteses totais",
+    "url": "/static/images/figure-05.jpeg?v=e47632ff8a9e",
     "ai_generated": true
   },
   {
     "id": "F06",
-    "label": "Eritroplasia Oral",
-    "url": "/static/images/figure-06.jpeg",
+    "label": "Leucoplasia oral",
+    "url": "/static/images/figure-06.jpeg?v=f43bd9470197",
     "ai_generated": true
   },
   {
     "id": "F07",
-    "label": "Eritroleucoplasia Oral",
-    "url": "/static/images/figure-07.jpeg",
+    "label": "Leucoplasia verrucosa proliferativa",
+    "url": "/static/images/figure-07.jpeg?v=b19997cbfa62",
     "ai_generated": true
   },
   {
     "id": "F08",
-    "label": "Lesões palatais associadas ao fumo reverso 1",
-    "url": "/static/images/figure-08.jpeg",
+    "label": "Lesão suspeita de carcinoma espinocelular oral 1",
+    "url": "/static/images/figure-08.jpeg?v=fd3690032e43",
     "ai_generated": true
   },
   {
     "id": "F09",
-    "label": "Lesões palatais associadas ao fumo reverso 2",
-    "url": "/static/images/figure-09.jpeg",
+    "label": "Lesão suspeita de carcinoma espinocelular oral 2",
+    "url": "/static/images/figure-09.jpeg?v=dad751ab49e8",
     "ai_generated": true
   },
   {
     "id": "F10",
-    "label": "Fibrose submucosa oral",
-    "url": "/static/images/figure-10.jpeg",
+    "label": "Lesões palatais associadas ao fumo reverso 1",
+    "url": "/static/images/figure-10.jpeg?v=5c7aff97cff0",
     "ai_generated": true
   },
   {
     "id": "F11",
-    "label": "Fibrose submucosa oral severa",
-    "url": "/static/images/figure-11.jpeg",
+    "label": "Lesões palatais associadas ao fumo reverso 2",
+    "url": "/static/images/figure-11.jpeg?v=15c6803ba1a0",
     "ai_generated": true
   },
   {
     "id": "F12",
-    "label": "Lesão suspeita de carcinoma espinocelular oral",
-    "url": "/static/images/figure-12.jpeg",
+    "label": "Líquen plano 1",
+    "url": "/static/images/figure-12.jpeg?v=6853ba0d78fa",
     "ai_generated": true
   },
   {
     "id": "F13",
-    "label": "Lúpus Oral Eritematoso 1",
-    "url": "/static/images/figure-13.jpeg",
+    "label": "Líquen plano 2",
+    "url": "/static/images/figure-13.jpeg?v=990cb6aefce3",
     "ai_generated": true
   },
   {
     "id": "F14",
-    "label": "Lúpus Oral Eritematoso 2",
-    "url": "/static/images/figure-14.jpeg",
+    "label": "Lúpus oral 1",
+    "url": "/static/images/figure-14.jpeg?v=d5a80a5a657d",
     "ai_generated": true
   },
   {
     "id": "F15",
-    "label": "Queilite Actínica",
-    "url": "/static/images/figure-15.jpeg",
+    "label": "Lúpus oral 2",
+    "url": "/static/images/figure-15.jpeg?v=1cb47ada47e3",
     "ai_generated": true
   },
   {
     "id": "F16",
-    "label": "Queilite Actínica Ulcerada",
-    "url": "/static/images/figure-16.jpeg",
+    "label": "Queilite actínica 1",
+    "url": "/static/images/figure-16.jpeg?v=cf812597f328",
+    "ai_generated": true
+  },
+  {
+    "id": "F17",
+    "label": "Queilite actínica 2",
+    "url": "/static/images/figure-17.jpeg?v=e40947e3520d",
     "ai_generated": true
   }
 ]

@@ -100,7 +100,7 @@ def test_delete_logout(client):
 
 def test_catalog_provenance():
  data=TestClient(main.app).get('/api/catalog').json()
- assert len(data['gallery'])==16 and len(data['references'])==9
+ assert len(data['gallery'])==17 and len(data['references'])==9
  assert all(x['ai_generated'] for x in data['gallery'])
  assert 'confirm the nature of an alteration' in main.RULES.lower()
  assert len(data['evidence']['references'])==9 and data['build']['clinical_rules_version']=='alia-evidence-2.0'
