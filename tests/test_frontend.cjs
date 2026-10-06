@@ -28,3 +28,19 @@ test('a network failure offers record reconciliation before retry',async()=>{
  assert.equal($('reloadCase').hidden,false);assert.match($('chatError').textContent,/Atualize a ficha/);
  assert.equal($('send').disabled,false);
 });
+test('professional search uses only Estomatologia and the supplied location',()=>{
+ const ctx={};vm.createContext(ctx);
+ const line=fs.readFileSync('app/static/app.js','utf8').split('\n').find(x=>x.startsWith('function professionalSearchQuery('));
+ vm.runInContext(line,ctx);
+ assert.equal(ctx.professionalSearchQuery(' Curitiba ',' Brasil '),'Estomatologia Curitiba Brasil');
+ assert.doesNotMatch(ctx.professionalSearchQuery('Lisboa','Portugal'),/medicina|medicine|oncology/i);
+});
+
+test('source pages render from new arrays and earlier saved string values',()=>{
+ const ctx={};vm.createContext(ctx);
+ const line=fs.readFileSync('app/static/app.js','utf8').split('\n').find(x=>x.startsWith('function sourcePageText('));
+ vm.runInContext(line,ctx);
+ assert.equal(ctx.sourcePageText('4–9, 15–21'),'4–9, 15–21');
+ assert.equal(ctx.sourcePageText(['3','6']),'3, 6');
+ assert.equal(ctx.sourcePageText(undefined),'');
+});

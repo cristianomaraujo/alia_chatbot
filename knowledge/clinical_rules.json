@@ -1,52 +1,704 @@
 {
-  "version": "alia-evidence-1.0",
+  "version": "alia-evidence-2.0",
   "reviewed_on": "2026-10-05",
-  "scope": "Apoio textual ao registro profissional de uma alteração da cavidade oral, à descrição de padrões clínicos e ao encaminhamento. Não confirma a natureza da alteração, não estima risco individual e não recomenda tratamento.",
+  "scope": "Apoio textual ao registro de uma alteração oral e à formulação de possibilidades clínicas fundamentadas. Pode apresentar hipóteses e diferenciais com nome, mas não confirma condições, não estima probabilidades individuais e não recomenda tratamento.",
   "source_policy": "Somente os nove textos completos fornecidos pelo responsável. As regras abaixo são paráfrases revisadas, não citações literais dos artigos. Recomendações descritas conforme as versões fornecidas; nenhuma validação do ALIA é atribuída aos artigos.",
   "references": {
-    "BC2008": {"name":"British Columbia 2008", "type":"Diretriz institucional de consenso", "population":"Adultos; o documento exclui história pessoal de câncer oral", "role":"História, exame, descrição, documentação e encaminhamento", "url":"https://pubmed.ncbi.nlm.nih.gov/?term=Guideline+early+detection+oral+cancer+British+Columbia+2008"},
-    "HODGSON2006": {"name":"Hodgson et al. 2006", "type":"Auditoria retrospectiva de encaminhamentos", "population":"Serviço britânico de medicina oral", "role":"Informações da carta e limitações dos critérios de encaminhamento", "url":"https://doi.org/10.1038/sj.bdj.4814262"},
-    "ADA2017": {"name":"Lingen et al. 2017", "type":"Diretriz ADA com revisão sistemática e GRADE", "population":"Adultos em avaliação clínica da cavidade oral", "role":"Exame convencional, avaliação de lesão e encaminhamento", "url":"https://doi.org/10.1016/j.adaj.2017.07.032"},
-    "MADERA2019": {"name":"Madera et al. 2019", "type":"Avaliação metodológica de oito diretrizes com AGREE II", "population":"Diretrizes de rastreamento e diagnóstico de câncer oral", "role":"Rastreabilidade, contexto e limites da evidência; não é validação de cada regra", "url":"https://doi.org/10.1007/s00784-018-2668-7"},
-    "MIGNOGNA2001": {"name":"Mignogna et al. 2001", "type":"Série clínica longitudinal", "population":"Pessoas com líquen plano oral confirmado em serviço especializado", "role":"Documentação de morfologia e mudanças focais no acompanhamento", "url":"https://doi.org/10.1016/S1368-8375(00)00096-8"},
-    "SEOANE2011": {"name":"Seoane et al. 2011", "type":"Intervenção educacional com estudantes", "population":"37 estudantes avaliados por 51 casos com notas e fotografias clínicas", "role":"Roteiro de descrição, encaminhamento e avaliação educacional; não valida IA", "url":"https://doi.org/10.4317/medoral.16904"},
-    "TAHERI2018": {"name":"Taheri et al. 2018", "type":"Estudo transversal de conhecimento", "population":"153 dentistas respondentes em congresso em Teerã", "role":"Justificativa de orientação contextual; o questionário não é um classificador clínico", "url":"https://doi.org/10.22034/APJCP.2018.19.8.2103"},
-    "INCORP2026": {"name":"Shenoy et al. 2026", "type":"Consenso por Delphi modificado", "population":"Contexto indiano de líquen plano oral e alterações liquenoides", "role":"Características clínicas, diferenciais e correlação com histopatologia", "url":"https://doi.org/10.1111/odi.70254"},
-    "TIANGCO2026": {"name":"Tiangco et al. 2026", "type":"Diretriz filipina de exame periódico com GRADE", "population":"Adultos assintomáticos e subgrupo com tabaco e/ou álcool; busca até agosto de 2021", "role":"Rastreamento populacional; não é protocolo de investigação de uma lesão presente", "url":"https://doi.org/10.47895/amp.v60i10.13373"}
+    "BC2008": {
+      "name": "British Columbia 2008",
+      "type": "Diretriz institucional de consenso",
+      "population": "Adultos; o documento exclui história pessoal de câncer oral",
+      "role": "História, exame, descrição, documentação e encaminhamento",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/?term=Guideline+early+detection+oral+cancer+British+Columbia+2008"
+    },
+    "HODGSON2006": {
+      "name": "Hodgson et al. 2006",
+      "type": "Auditoria retrospectiva de encaminhamentos",
+      "population": "Serviço britânico de medicina oral",
+      "role": "Informações da carta e limitações dos critérios de encaminhamento",
+      "url": "https://doi.org/10.1038/sj.bdj.4814262"
+    },
+    "ADA2017": {
+      "name": "Lingen et al. 2017",
+      "type": "Diretriz ADA com revisão sistemática e GRADE",
+      "population": "Adultos em avaliação clínica da cavidade oral",
+      "role": "Exame convencional, avaliação de lesão e encaminhamento",
+      "url": "https://doi.org/10.1016/j.adaj.2017.07.032"
+    },
+    "MADERA2019": {
+      "name": "Madera et al. 2019",
+      "type": "Avaliação metodológica de oito diretrizes com AGREE II",
+      "population": "Diretrizes de rastreamento e diagnóstico de câncer oral",
+      "role": "Rastreabilidade, contexto e limites da evidência; não é validação de cada regra",
+      "url": "https://doi.org/10.1007/s00784-018-2668-7"
+    },
+    "MIGNOGNA2001": {
+      "name": "Mignogna et al. 2001",
+      "type": "Série clínica longitudinal",
+      "population": "Pessoas com líquen plano oral confirmado em serviço especializado",
+      "role": "Documentação de morfologia e mudanças focais no acompanhamento",
+      "url": "https://doi.org/10.1016/S1368-8375(00)00096-8"
+    },
+    "SEOANE2011": {
+      "name": "Seoane et al. 2011",
+      "type": "Intervenção educacional com estudantes",
+      "population": "37 estudantes avaliados por 51 casos com notas e fotografias clínicas",
+      "role": "Roteiro de descrição, encaminhamento e avaliação educacional; não valida IA",
+      "url": "https://doi.org/10.4317/medoral.16904"
+    },
+    "TAHERI2018": {
+      "name": "Taheri et al. 2018",
+      "type": "Estudo transversal de conhecimento",
+      "population": "153 dentistas respondentes em congresso em Teerã",
+      "role": "Justificativa de orientação contextual; o questionário não é um classificador clínico",
+      "url": "https://doi.org/10.22034/APJCP.2018.19.8.2103"
+    },
+    "INCORP2026": {
+      "name": "Shenoy et al. 2026",
+      "type": "Consenso por Delphi modificado",
+      "population": "Contexto indiano de líquen plano oral e alterações liquenoides",
+      "role": "Características clínicas, diferenciais e correlação com histopatologia",
+      "url": "https://doi.org/10.1111/odi.70254"
+    },
+    "TIANGCO2026": {
+      "name": "Tiangco et al. 2026",
+      "type": "Diretriz filipina de exame periódico com GRADE",
+      "population": "Adultos assintomáticos e subgrupo com tabaco e/ou álcool; busca até agosto de 2021",
+      "role": "Rastreamento populacional; não é protocolo de investigação de uma lesão presente",
+      "url": "https://doi.org/10.47895/amp.v60i10.13373"
+    }
   },
   "rules": [
-    {"id":"history", "text":"Obter história médica, social e odontológica atualizada, incluindo medicamentos, alergias, queixas orais e hábitos de tabaco e álcool. Quando informado, registrar quantidade, frequência e duração dos hábitos, preservando a incerteza.", "sources":[{"ref":"BC2008","pdf_pages":"2","locator":"Patient History"},{"ref":"ADA2017","pdf_pages":"8–9","locator":"Good practice statement; Tabela 3"}], "limits":"História incompleta não equivale à ausência de risco. Não inventar dados nem exigir tratamento oncológico prévio em toda pessoa."},
-    {"id":"examination", "text":"A avaliação clínica convencional inclui inspeção e palpação extraoral e intraoral. Registrar lábios, tecidos periorais, regiões linfonodais e tecidos moles, incluindo faces lateral e ventral da língua, assoalho e complexo do palato mole. Um exame não realizado deve ser registrado como não avaliado.", "sources":[{"ref":"BC2008","pdf_pages":"2","locator":"Visual Screening Examination"},{"ref":"ADA2017","pdf_pages":"8–9","locator":"Good practice statement"}], "limits":"O ALIA organiza achados informados pelo profissional; não realiza exame nem confirma normalidade."},
-    {"id":"description", "text":"Descrever localização, tamanho com unidade, cor, textura, superfície, consistência, contorno e evolução. Distinguir duração da alteração de tempo após retirada de um irritante. Presença de contato ou trauma não demonstra, isoladamente, a causa da alteração.", "sources":[{"ref":"BC2008","pdf_pages":"3","locator":"Lesion inspection; Diagnostic Biopsy"},{"ref":"SEOANE2011","pdf_pages":"2–3","locator":"Tabelas 1 e 2"}], "limits":"Campos adicionais da regra original permanecem disponíveis para registro; odor, revestimento e tratamentos prévios são contextuais, não requisitos universais deste conjunto."},
-    {"id":"documentation", "text":"Registrar características clínicas na avaliação inicial e sua evolução em reavaliações. O registro fotográfico clínico pode ser realizado e guardado pelo profissional. Fotografias e representações geradas por IA não confirmam a natureza da alteração.", "sources":[{"ref":"BC2008","pdf_pages":"3","locator":"Documentation"},{"ref":"MIGNOGNA2001","pdf_pages":"2–5","locator":"Patients and methods; Discussion"}], "limits":"O estudo de líquen plano não impõe intervalo de seguimento a outras lesões; o ALIA não recebe nem interpreta fotografias."},
-    {"id":"suspicious_referral", "text":"Quando o profissional considera uma lesão clinicamente suspeita de alteração potencialmente maligna ou maligna, a diretriz ADA de 2017 indica biópsia por profissional habilitado ou encaminhamento imediato a especialista. Não condicionar esse encaminhamento a completar todas as perguntas ou a aguardar três semanas.", "sources":[{"ref":"ADA2017","pdf_pages":"9–10","locator":"Recomendação 2; Figura 6"}], "limits":"Recomendação condicional, evidência baixa. A suspeita é uma avaliação clínica do profissional; o chatbot não atribui uma categoria de urgência a partir de uma soma de achados."},
-    {"id":"persistent_referral", "text":"Lesão aparentemente não suspeita de causa incerta requer acompanhamento profissional; persistência, progressão ou impossibilidade de afastar alteração potencialmente maligna justificam biópsia ou encaminhamento. Os prazos históricos diferem: British Columbia usa mais de três semanas após remoção de irritantes e o roteiro de Seoane usa úlcera persistente após 14 dias de remoção da causa presumida. Esses intervalos não são uma regra global de espera.", "sources":[{"ref":"ADA2017","pdf_pages":"9–10","locator":"Recomendação 1; Figura 6"},{"ref":"BC2008","pdf_pages":"3","locator":"Diagnostic Biopsy"},{"ref":"SEOANE2011","pdf_pages":"3","locator":"Tabela 2"}], "limits":"Não apresentar um calendário universal ou sugerir tratamento para testar a causa. Registrar se houve reavaliação e retirada do irritante, apenas quando informado."},
-    {"id":"no_reassurance", "text":"Ausência de tabagismo, consumo de álcool, dor ou correspondência com os padrões disponíveis não exclui alteração relevante. Os critérios de encaminhamento apresentam limitações; registrar a queixa e descrever a alteração é necessário mesmo sem os sinais clássicos.", "sources":[{"ref":"HODGSON2006","pdf_pages":"2–5","locator":"Results; Discussion"},{"ref":"MIGNOGNA2001","pdf_pages":"3–5","locator":"Results; Discussion"}], "limits":"Amostras clínicas selecionadas; não converter frequências dos estudos em risco individual nem afirmar que ausência de fatores não importa."},
-    {"id":"adjuncts", "text":"A diretriz ADA de 2017 não recomenda autofluorescência, refletância ou corantes vitais para avaliação rotineira de alterações potencialmente malignas. Citologia tem função excepcional quando o paciente recusa biópsia ou encaminhamento, com seguimento e investigação se houver persistência ou progressão. Nenhum método auxiliar substitui a avaliação clínica e a confirmação histopatológica quando indicada.", "sources":[{"ref":"ADA2017","pdf_pages":"9–10, 13","locator":"Recomendações 3, 4 e 6; Discussion"}], "limits":"A recomendação difere do documento BC2008 que apresenta recursos visuais opcionais. O ALIA não recomenda a realização rotineira desses recursos nem orienta técnica de biópsia."},
-    {"id":"screening_scope", "text":"Rastreamento de adultos assintomáticos e avaliação de uma alteração já identificada têm finalidades diferentes. O ALIA não estabelece frequência global de rastreamento: BC2008 propõe consenso anual a partir de 40 anos; Tiangco distingue adultos a partir de 35 anos e recomenda exame trienal para usuários de tabaco e/ou álcool, com recomendações diferentes para população geral assintomática.", "sources":[{"ref":"BC2008","pdf_pages":"2, 5","locator":"Recommendations; Level of Evidence"},{"ref":"TIANGCO2026","pdf_pages":"5, 8–9","locator":"Recomendações 5.1 e 5.2"}], "limits":"A justificativa narrativa de Tiangco menciona exame anual, mas suas recomendações numeradas são trienais. Não misturar idade e intervalo de fontes diferentes."},
-    {"id":"histopathology", "text":"A avaliação histopatológica de tecido obtido por biópsia é a referência para confirmar displasia e câncer oral. Líquen plano oral requer correlação entre características clínicas e histopatológicas. Uma conversa pode organizar achados compatíveis com padrões clínicos, mas não confirmar displasia, malignidade ou líquen plano.", "sources":[{"ref":"ADA2017","pdf_pages":"3, 5","locator":"Criterion standard; Tabela 1"},{"ref":"INCORP2026","pdf_pages":"5, 16–21","locator":"Investigations; Tabela 5; Figura 1"}], "limits":"O ALIA não seleciona técnica, local ou quantidade de tecido e não interpreta lâminas ou exames."},
-    {"id":"lichenoid_context", "text":"O consenso INCORP descreve no líquen plano oral um padrão frequentemente bilateral e simétrico, com estrias brancas reticulares, podendo coexistir áreas atróficas, erosivas ou em placa. Registrar distribuição e padrão e verificar relação temporal com medicamentos ou substâncias e contato com restaurações, tabaco sem fumaça ou betel. Esses achados podem sugerir padrão liquenoide, mas não distinguem definitivamente líquen plano de outras alterações.", "sources":[{"ref":"INCORP2026","pdf_pages":"4–9, 17, 19–21","locator":"Tabelas 1, 2, 5 e 6; Figura 1"}], "limits":"Perguntas específicas somente neste contexto; registrar a lesão principal e a distribuição, sem caracterizar múltiplas lesões no mesmo caso. Não recomendar suspensão de medicamentos ou troca de restaurações."},
-    {"id":"lichenoid_uncertainty", "text":"O consenso INCORP registra discordância sobre displasia em líquen plano e contém inconsistência entre texto e tabela sobre esse critério. Não converter esse ponto em regra automática. O estudo Mignogna destaca mudanças focais e perda de homogeneidade em líquen plano confirmado; suas frequências e intervalos não se aplicam automaticamente a outras alterações.", "sources":[{"ref":"INCORP2026","pdf_pages":"13–18","locator":"High-risk histological features; Diagnostic Criteria; Tabela 5"},{"ref":"MIGNOGNA2001","pdf_pages":"2–5","locator":"Discussion"}], "limits":"Não calcular porcentagem de transformação individual, usar sexo como classificação de risco ou extrapolar protocolo especializado de acompanhamento."},
-    {"id":"referral_record", "text":"O encaminhamento deve apresentar motivo, localização, descrição da alteração, duração e evolução, sintomas e história médica e social relevante, além de informações de contato e identificação quando inseridas pelo profissional. A indicação e eventual prioridade precisam ser revisadas pelo profissional responsável, incluindo o que foi comunicado ao paciente quando disponível.", "sources":[{"ref":"HODGSON2006","pdf_pages":"4–5","locator":"Figura 2"},{"ref":"SEOANE2011","pdf_pages":"2","locator":"Tabela 1"}], "limits":"Regras administrativas britânicas e rede canadense não se tornam requisitos globais. Identificação é preenchida localmente no documento e não enviada ao modelo."},
-    {"id":"evidence_limits", "text":"Cada regra precisa explicitar fonte, população e condição de aplicação. Estudos de conhecimento ou de ensino justificam orientação e avaliação da ferramenta, mas não validam um chatbot. A lista de diferenciais de um artigo não é um classificador. Ausência de critérios para uma alteração significa limitação da base, não ausência de doença.", "sources":[{"ref":"MADERA2019","pdf_pages":"4, 9–10","locator":"Applicability; Discussion; Conclusion"},{"ref":"SEOANE2011","pdf_pages":"2–5","locator":"Methods; Discussion"},{"ref":"TAHERI2018","pdf_pages":"1–5","locator":"Methods; Results; Discussion"}], "limits":"Nenhum dos nove textos avalia o ALIA. Consistência computacional não equivale a validação clínica."},
-    {"id":"white_pattern", "text":"Uma alteração predominantemente branca e não removível à raspagem constitui um padrão descritivo que pode justificar avaliação especializada. A cor e a não removibilidade, sozinhas, não confirmam leucoplasia, displasia ou câncer.", "sources":[{"ref":"BC2008","pdf_pages":"3, 6","locator":"Lesion inspection; Glossary"},{"ref":"SEOANE2011","pdf_pages":"3","locator":"Tabela 2"}], "limits":"Não chamar toda lesão branca de leucoplasia; essa designação requer exclusão de outras entidades."},
-    {"id":"red_pattern", "text":"Alteração vermelha ou vermelho-branca persistente é um padrão clínico descritivo de atenção. A cor isolada não confirma eritroplasia, displasia ou câncer; duração, evolução e exame devem ser considerados.", "sources":[{"ref":"BC2008","pdf_pages":"3","locator":"Lesion inspection"},{"ref":"SEOANE2011","pdf_pages":"3","locator":"Tabela 2"},{"ref":"ADA2017","pdf_pages":"2","locator":"CVTE considerations"}], "limits":"Não atribuir doença específica apenas pela cor nem definir persistência por um limiar global inventado."},
-    {"id":"ulcer_pattern", "text":"Ulceração persistente é um padrão clínico que merece investigação profissional. Não confirma câncer e não prova origem traumática. Registrar duração, evolução e irritantes sem impor espera se já há suspeita clínica.", "sources":[{"ref":"HODGSON2006","pdf_pages":"1–2","locator":"Tabelas 1 e 2"},{"ref":"BC2008","pdf_pages":"3","locator":"Diagnostic Biopsy"},{"ref":"ADA2017","pdf_pages":"9–10","locator":"Recomendação 2; Figura 6"}], "limits":"Os critérios de persistência e seus prazos dependem do contexto; nenhum achado isolado estabelece a natureza da alteração."}
+    {
+      "id": "history",
+      "text": "Obter história médica, social e odontológica atualizada, incluindo medicamentos, alergias, queixas orais e hábitos de tabaco e álcool. Quando informado, registrar quantidade, frequência e duração dos hábitos, preservando a incerteza.",
+      "sources": [
+        {
+          "ref": "BC2008",
+          "pdf_pages": "2",
+          "locator": "Patient History"
+        },
+        {
+          "ref": "ADA2017",
+          "pdf_pages": "8–9",
+          "locator": "Good practice statement; Tabela 3"
+        }
+      ],
+      "limits": "História incompleta não equivale à ausência de risco. Não inventar dados nem exigir tratamento oncológico prévio em toda pessoa."
+    },
+    {
+      "id": "examination",
+      "text": "A avaliação clínica convencional inclui inspeção e palpação extraoral e intraoral. Registrar lábios, tecidos periorais, regiões linfonodais e tecidos moles, incluindo faces lateral e ventral da língua, assoalho e complexo do palato mole. Um exame não realizado deve ser registrado como não avaliado.",
+      "sources": [
+        {
+          "ref": "BC2008",
+          "pdf_pages": "2",
+          "locator": "Visual Screening Examination"
+        },
+        {
+          "ref": "ADA2017",
+          "pdf_pages": "8–9",
+          "locator": "Good practice statement"
+        }
+      ],
+      "limits": "O ALIA organiza achados informados pelo profissional; não realiza exame nem confirma normalidade."
+    },
+    {
+      "id": "description",
+      "text": "Descrever localização, tamanho com unidade, cor, textura, superfície, consistência, contorno e evolução. Distinguir duração da alteração de tempo após retirada de um irritante. Presença de contato ou trauma não demonstra, isoladamente, a causa da alteração.",
+      "sources": [
+        {
+          "ref": "BC2008",
+          "pdf_pages": "3",
+          "locator": "Lesion inspection; Diagnostic Biopsy"
+        },
+        {
+          "ref": "SEOANE2011",
+          "pdf_pages": "2–3",
+          "locator": "Tabelas 1 e 2"
+        }
+      ],
+      "limits": "Campos adicionais da regra original permanecem disponíveis para registro; odor, revestimento e tratamentos prévios são contextuais, não requisitos universais deste conjunto."
+    },
+    {
+      "id": "documentation",
+      "text": "Registrar características clínicas na avaliação inicial e sua evolução em reavaliações. O registro fotográfico clínico pode ser realizado e guardado pelo profissional. Fotografias e representações geradas por IA não confirmam a natureza da alteração.",
+      "sources": [
+        {
+          "ref": "BC2008",
+          "pdf_pages": "3",
+          "locator": "Documentation"
+        },
+        {
+          "ref": "MIGNOGNA2001",
+          "pdf_pages": "2–5",
+          "locator": "Patients and methods; Discussion"
+        }
+      ],
+      "limits": "O estudo de líquen plano não impõe intervalo de seguimento a outras lesões; o ALIA não recebe nem interpreta fotografias."
+    },
+    {
+      "id": "suspicious_referral",
+      "text": "Quando o profissional considera uma lesão clinicamente suspeita de alteração potencialmente maligna ou maligna, a diretriz ADA de 2017 indica biópsia por profissional habilitado ou encaminhamento imediato a especialista. Não condicionar esse encaminhamento a completar todas as perguntas ou a aguardar três semanas.",
+      "sources": [
+        {
+          "ref": "ADA2017",
+          "pdf_pages": "9–10",
+          "locator": "Recomendação 2; Figura 6"
+        }
+      ],
+      "limits": "Recomendação condicional, evidência baixa. A suspeita é uma avaliação clínica do profissional; o chatbot não atribui uma categoria de urgência a partir de uma soma de achados."
+    },
+    {
+      "id": "persistent_referral",
+      "text": "Lesão aparentemente não suspeita de causa incerta requer acompanhamento profissional; persistência, progressão ou impossibilidade de afastar alteração potencialmente maligna justificam biópsia ou encaminhamento. Os prazos históricos diferem: British Columbia usa mais de três semanas após remoção de irritantes e o roteiro de Seoane usa úlcera persistente após 14 dias de remoção da causa presumida. Esses intervalos não são uma regra global de espera.",
+      "sources": [
+        {
+          "ref": "ADA2017",
+          "pdf_pages": "9–10",
+          "locator": "Recomendação 1; Figura 6"
+        },
+        {
+          "ref": "BC2008",
+          "pdf_pages": "3",
+          "locator": "Diagnostic Biopsy"
+        },
+        {
+          "ref": "SEOANE2011",
+          "pdf_pages": "3",
+          "locator": "Tabela 2"
+        }
+      ],
+      "limits": "Não apresentar um calendário universal ou sugerir tratamento para testar a causa. Registrar se houve reavaliação e retirada do irritante, apenas quando informado."
+    },
+    {
+      "id": "no_reassurance",
+      "text": "Ausência de tabagismo, consumo de álcool, dor ou correspondência com os padrões disponíveis não exclui alteração relevante. Os critérios de encaminhamento apresentam limitações; registrar a queixa e descrever a alteração é necessário mesmo sem os sinais clássicos.",
+      "sources": [
+        {
+          "ref": "HODGSON2006",
+          "pdf_pages": "2–5",
+          "locator": "Results; Discussion"
+        },
+        {
+          "ref": "MIGNOGNA2001",
+          "pdf_pages": "3–5",
+          "locator": "Results; Discussion"
+        }
+      ],
+      "limits": "Amostras clínicas selecionadas; não converter frequências dos estudos em risco individual nem afirmar que ausência de fatores não importa."
+    },
+    {
+      "id": "adjuncts",
+      "text": "A diretriz ADA de 2017 não recomenda autofluorescência, refletância ou corantes vitais para avaliação rotineira de alterações potencialmente malignas. Citologia tem função excepcional quando o paciente recusa biópsia ou encaminhamento, com seguimento e investigação se houver persistência ou progressão. Nenhum método auxiliar substitui a avaliação clínica e a confirmação histopatológica quando indicada.",
+      "sources": [
+        {
+          "ref": "ADA2017",
+          "pdf_pages": "9–10, 13",
+          "locator": "Recomendações 3, 4 e 6; Discussion"
+        }
+      ],
+      "limits": "A recomendação difere do documento BC2008 que apresenta recursos visuais opcionais. O ALIA não recomenda a realização rotineira desses recursos nem orienta técnica de biópsia."
+    },
+    {
+      "id": "screening_scope",
+      "text": "Rastreamento de adultos assintomáticos e avaliação de uma alteração já identificada têm finalidades diferentes. O ALIA não estabelece frequência global de rastreamento: BC2008 propõe consenso anual a partir de 40 anos; Tiangco distingue adultos a partir de 35 anos e recomenda exame trienal para usuários de tabaco e/ou álcool, com recomendações diferentes para população geral assintomática.",
+      "sources": [
+        {
+          "ref": "BC2008",
+          "pdf_pages": "2, 5",
+          "locator": "Recommendations; Level of Evidence"
+        },
+        {
+          "ref": "TIANGCO2026",
+          "pdf_pages": "5, 8–9",
+          "locator": "Recomendações 5.1 e 5.2"
+        }
+      ],
+      "limits": "A justificativa narrativa de Tiangco menciona exame anual, mas suas recomendações numeradas são trienais. Não misturar idade e intervalo de fontes diferentes."
+    },
+    {
+      "id": "histopathology",
+      "text": "A avaliação histopatológica de tecido obtido por biópsia é a referência para confirmar displasia e câncer oral. Líquen plano oral requer correlação entre características clínicas e histopatológicas. Uma conversa pode organizar achados compatíveis com padrões clínicos, mas não confirmar displasia, malignidade ou líquen plano.",
+      "sources": [
+        {
+          "ref": "ADA2017",
+          "pdf_pages": "3, 5",
+          "locator": "Criterion standard; Tabela 1"
+        },
+        {
+          "ref": "INCORP2026",
+          "pdf_pages": "5, 16–21",
+          "locator": "Investigations; Tabela 5; Figura 1"
+        }
+      ],
+      "limits": "O ALIA não seleciona técnica, local ou quantidade de tecido e não interpreta lâminas ou exames."
+    },
+    {
+      "id": "lichenoid_context",
+      "text": "O consenso INCORP descreve no líquen plano oral um padrão frequentemente bilateral e simétrico, com estrias brancas reticulares, podendo coexistir áreas atróficas, erosivas ou em placa. Registrar distribuição e padrão e verificar relação temporal com medicamentos ou substâncias e contato com restaurações, tabaco sem fumaça ou betel. Esses achados podem sugerir padrão liquenoide, mas não distinguem definitivamente líquen plano de outras alterações.",
+      "sources": [
+        {
+          "ref": "INCORP2026",
+          "pdf_pages": "4–9, 17, 19–21",
+          "locator": "Tabelas 1, 2, 5 e 6; Figura 1"
+        }
+      ],
+      "limits": "Perguntas específicas somente neste contexto; registrar a lesão principal e a distribuição, sem caracterizar múltiplas lesões no mesmo caso. Não recomendar suspensão de medicamentos ou troca de restaurações."
+    },
+    {
+      "id": "lichenoid_uncertainty",
+      "text": "O consenso INCORP registra discordância sobre displasia em líquen plano e contém inconsistência entre texto e tabela sobre esse critério. Não converter esse ponto em regra automática. O estudo Mignogna destaca mudanças focais e perda de homogeneidade em líquen plano confirmado; suas frequências e intervalos não se aplicam automaticamente a outras alterações.",
+      "sources": [
+        {
+          "ref": "INCORP2026",
+          "pdf_pages": "13–18",
+          "locator": "High-risk histological features; Diagnostic Criteria; Tabela 5"
+        },
+        {
+          "ref": "MIGNOGNA2001",
+          "pdf_pages": "2–5",
+          "locator": "Discussion"
+        }
+      ],
+      "limits": "Não calcular porcentagem de transformação individual, usar sexo como classificação de risco ou extrapolar protocolo especializado de acompanhamento."
+    },
+    {
+      "id": "referral_record",
+      "text": "O encaminhamento deve apresentar motivo, localização, descrição da alteração, duração e evolução, sintomas e história médica e social relevante, além de informações de contato e identificação quando inseridas pelo profissional. A indicação e eventual prioridade precisam ser revisadas pelo profissional responsável, incluindo o que foi comunicado ao paciente quando disponível.",
+      "sources": [
+        {
+          "ref": "HODGSON2006",
+          "pdf_pages": "4–5",
+          "locator": "Figura 2"
+        },
+        {
+          "ref": "SEOANE2011",
+          "pdf_pages": "2",
+          "locator": "Tabela 1"
+        }
+      ],
+      "limits": "Regras administrativas britânicas e rede canadense não se tornam requisitos globais. Identificação é preenchida localmente no documento e não enviada ao modelo."
+    },
+    {
+      "id": "evidence_limits",
+      "text": "Cada regra precisa explicitar fonte, população e condição de aplicação. Estudos de conhecimento ou de ensino justificam orientação e avaliação da ferramenta, mas não validam um chatbot. A lista de diferenciais de um artigo não é um classificador. Ausência de critérios para uma alteração significa limitação da base, não ausência de doença.",
+      "sources": [
+        {
+          "ref": "MADERA2019",
+          "pdf_pages": "4, 9–10",
+          "locator": "Applicability; Discussion; Conclusion"
+        },
+        {
+          "ref": "SEOANE2011",
+          "pdf_pages": "2–5",
+          "locator": "Methods; Discussion"
+        },
+        {
+          "ref": "TAHERI2018",
+          "pdf_pages": "1–5",
+          "locator": "Methods; Results; Discussion"
+        }
+      ],
+      "limits": "Nenhum dos nove textos avalia o ALIA. Consistência computacional não equivale a validação clínica."
+    },
+    {
+      "id": "white_pattern",
+      "text": "Uma alteração predominantemente branca e não removível à raspagem constitui um padrão descritivo que pode justificar avaliação especializada. A cor e a não removibilidade, sozinhas, não confirmam leucoplasia, displasia ou câncer.",
+      "sources": [
+        {
+          "ref": "BC2008",
+          "pdf_pages": "3, 6",
+          "locator": "Lesion inspection; Glossary"
+        },
+        {
+          "ref": "SEOANE2011",
+          "pdf_pages": "3",
+          "locator": "Tabela 2"
+        }
+      ],
+      "limits": "Não chamar toda lesão branca de leucoplasia; essa designação requer exclusão de outras entidades."
+    },
+    {
+      "id": "red_pattern",
+      "text": "Alteração vermelha ou vermelho-branca persistente é um padrão clínico descritivo de atenção. A cor isolada não confirma eritroplasia, displasia ou câncer; duração, evolução e exame devem ser considerados.",
+      "sources": [
+        {
+          "ref": "BC2008",
+          "pdf_pages": "3",
+          "locator": "Lesion inspection"
+        },
+        {
+          "ref": "SEOANE2011",
+          "pdf_pages": "3",
+          "locator": "Tabela 2"
+        },
+        {
+          "ref": "ADA2017",
+          "pdf_pages": "2",
+          "locator": "CVTE considerations"
+        }
+      ],
+      "limits": "Não atribuir doença específica apenas pela cor nem definir persistência por um limiar global inventado."
+    },
+    {
+      "id": "ulcer_pattern",
+      "text": "Ulceração persistente é um padrão clínico que merece investigação profissional. Não confirma câncer e não prova origem traumática. Registrar duração, evolução e irritantes sem impor espera se já há suspeita clínica.",
+      "sources": [
+        {
+          "ref": "HODGSON2006",
+          "pdf_pages": "1–2",
+          "locator": "Tabelas 1 e 2"
+        },
+        {
+          "ref": "BC2008",
+          "pdf_pages": "3",
+          "locator": "Diagnostic Biopsy"
+        },
+        {
+          "ref": "ADA2017",
+          "pdf_pages": "9–10",
+          "locator": "Recomendação 2; Figura 6"
+        }
+      ],
+      "limits": "Os critérios de persistência e seus prazos dependem do contexto; nenhum achado isolado estabelece a natureza da alteração."
+    },
+    {
+      "id": "lichen_hypothesis",
+      "text": "Estrias brancas reticulares entrelaçadas, frequentemente bilaterais e simétricas, podem sustentar a possibilidade clínica de líquen plano oral. Podem coexistir áreas atróficas, erosivas ou em placa. A ausência de dados sobre medicamentos ou contato limita a distinção de outras alterações liquenoides, mas não impede mencionar a hipótese quando a morfologia é característica. A confirmação depende de avaliação estomatológica e correlação clinicopatológica.",
+      "sources": [
+        {
+          "ref": "INCORP2026",
+          "pdf_pages": "4–9, 15–21",
+          "locator": "Características clínicas; critérios; diferencial; Tabelas 5 e 6"
+        }
+      ],
+      "limits": "Regras operacionais para geração de hipóteses, sem pontuação e sem validação de desempenho clínico do ALIA. Não representam um classificador validado pelos artigos."
+    },
+    {
+      "id": "lichenoid_differential",
+      "text": "Alterações liquenoides podem se relacionar a contato com restaurações/substâncias ou a medicamentos. Correspondência topográfica e unilateralidade ajudam a considerar contato; sequência temporal documentada ajuda a considerar reação associada a medicamento. São possibilidades que podem ser comparadas com líquen plano oral, sem estabelecer relação causal nem orientar suspensão de medicamentos ou troca de materiais.",
+      "sources": [
+        {
+          "ref": "INCORP2026",
+          "pdf_pages": "3–9, 10–11, 15–21",
+          "locator": "Oral lichenoid lesions; Tabelas 3, 4 e 6"
+        }
+      ],
+      "limits": "Regras operacionais para geração de hipóteses, sem pontuação e sem validação de desempenho clínico do ALIA. Não representam um classificador validado pelos artigos."
+    },
+    {
+      "id": "leukoplakia_hypothesis",
+      "text": "Placa branca não removível e que não pode ser caracterizada como outra alteração pode receber a designação clínica de leucoplasia. Na conversa, uma placa branca persistente e não removível permite considerar essa possibilidade, explicitando causas ainda não avaliadas e diferenciais, sem transformar exclusão incompleta em certeza. Estrias reticulares características favorecem a comparação com líquen plano.",
+      "sources": [
+        {
+          "ref": "BC2008",
+          "pdf_pages": "3, 6",
+          "locator": "Lesion inspection; Glossary"
+        },
+        {
+          "ref": "INCORP2026",
+          "pdf_pages": "15–16, 21",
+          "locator": "Differential diagnosis; Tabela 6"
+        }
+      ],
+      "limits": "Regras operacionais para geração de hipóteses, sem pontuação e sem validação de desempenho clínico do ALIA. Não representam um classificador validado pelos artigos."
+    },
+    {
+      "id": "erythroplakia_hypothesis",
+      "text": "O glossário de British Columbia descreve eritroplasia como alteração vermelha, bem delimitada, de superfície aveludada ou granular. Esse conjunto, quando persistente e sem uma explicação clínica mais coerente, permite considerar a possibilidade de eritroplasia e investigar causas alternativas. Cor vermelha isolada não sustenta o nome e não estabelece displasia ou malignidade.",
+      "sources": [
+        {
+          "ref": "BC2008",
+          "pdf_pages": "3, 6",
+          "locator": "Lesion inspection; Glossary"
+        },
+        {
+          "ref": "ADA2017",
+          "pdf_pages": "2, 9–10",
+          "locator": "CVTE; avaliação e encaminhamento"
+        }
+      ],
+      "limits": "Regras operacionais para geração de hipóteses, sem pontuação e sem validação de desempenho clínico do ALIA. Não representam um classificador validado pelos artigos."
+    },
+    {
+      "id": "neoplastic_hypothesis",
+      "text": "Ulceração persistente, endurecimento/infiltração e progressão são achados que podem motivar investigação de neoplasia oral; carcinoma espinocelular aparece entre os diferenciais de alterações da mucosa no consenso INCORP. Uma conversa pode mencionar essa possibilidade a investigar quando há um conjunto clínico coerente, sem confirmar malignidade ou estimar probabilidade. Cor ou hábitos isolados não estabelecem essa possibilidade específica.",
+      "sources": [
+        {
+          "ref": "BC2008",
+          "pdf_pages": "3, 6",
+          "locator": "Lesion inspection; Diagnostic Biopsy; Glossary"
+        },
+        {
+          "ref": "INCORP2026",
+          "pdf_pages": "15–16, 21",
+          "locator": "Differential diagnosis; Tabela 6"
+        },
+        {
+          "ref": "ADA2017",
+          "pdf_pages": "9–10",
+          "locator": "Recomendação 2"
+        }
+      ],
+      "limits": "Regras operacionais para geração de hipóteses, sem pontuação e sem validação de desempenho clínico do ALIA. Não representam um classificador validado pelos artigos."
+    },
+    {
+      "id": "traumatic_hypothesis",
+      "text": "Trauma por mordedura figura entre os diferenciais de alterações ulcerativas no consenso INCORP. Uma úlcera com contato mecânico correspondente e história coerente permite considerar ulceração traumática, sem assumir causalidade nem excluir uma neoplasia. Persistência ou progressão precisa ser investigada sem impor espera.",
+      "sources": [
+        {
+          "ref": "INCORP2026",
+          "pdf_pages": "15–16, 21",
+          "locator": "Differential diagnosis; Tabela 6"
+        },
+        {
+          "ref": "BC2008",
+          "pdf_pages": "3",
+          "locator": "Diagnostic Biopsy"
+        },
+        {
+          "ref": "ADA2017",
+          "pdf_pages": "9–10",
+          "locator": "Recomendações 1 e 2"
+        }
+      ],
+      "limits": "Regras operacionais para geração de hipóteses, sem pontuação e sem validação de desempenho clínico do ALIA. Não representam um classificador validado pelos artigos."
+    }
   ],
   "patterns": [
-    {"id":"white_nonremovable", "label":"Alteração branca não removível à raspagem", "rule":"white_pattern", "required":{"color":["reported"],"scraping":["reported","absent"]}, "criteria":"Coloração predominantemente branca explicitamente descrita e não removibilidade à raspagem explicitamente confirmada. Estado absent no campo raspagem significa ausência de removibilidade, não prova por si: avaliar o significado do texto.", "limits":"Padrão descritivo, sem confirmar leucoplasia ou excluir outras alterações."},
-    {"id":"red_persistent", "label":"Alteração vermelha ou vermelho-branca persistente", "rule":"red_pattern", "required":{"color":["reported"],"duration":["reported"]}, "criteria":"Cor vermelha ou vermelho-branca explícita e relato que estabeleça persistência, levando em conta duração e evolução. Uma duração de horas, um dado desconhecido ou a cor sozinha não estabelece persistência.", "limits":"Padrão descritivo, sem confirmar eritroplasia ou câncer; não inventar limiar temporal universal."},
-    {"id":"persistent_ulcer", "label":"Ulceração persistente", "rule":"ulcer_pattern", "required":{"ulceration":["reported"],"duration":["reported"]}, "criteria":"Ulceração presente, e não apenas erosão, e relato explícito que estabeleça persistência. Preservar contexto e evolução; não assumir persistência a partir de palavra isolada ou duração desconhecida.", "limits":"Padrão descritivo que não identifica etiologia ou malignidade."},
-    {"id":"lichenoid_pattern", "label":"Alteração de padrão liquenoide", "rule":"lichenoid_context", "required":{"color":["reported"],"reticular_pattern":["reported"],"distribution":["reported"],"medication_timing":["reported","absent"],"contact_relation":["reported","absent"]}, "criteria":"Estrias ou rede branca reticular explicitamente presentes, com distribuição e simetria registradas; o padrão precisa ser coerente com o conjunto. Relações com medicamento/substância e contato local devem ter sido avaliadas e devem constar na razão, sem determinar causa. Não usar uma placa branca isolada ou coloração branca como prova de padrão liquenoide.", "limits":"Pode incluir líquen plano ou outras alterações liquenoides, mas não os distingue. Confirmação requer correlação clínica e histopatológica. Não aplicar critérios de displasia discordantes nem criar diagnóstico definitivo."}
+    {
+      "id": "white_nonremovable",
+      "label": "Alteração branca não removível à raspagem",
+      "rule": "white_pattern",
+      "required": {
+        "color": [
+          "reported"
+        ],
+        "scraping": [
+          "reported",
+          "absent"
+        ]
+      },
+      "criteria": "Coloração predominantemente branca explicitamente descrita e não removibilidade à raspagem explicitamente confirmada. Estado absent no campo raspagem significa ausência de removibilidade, não prova por si: avaliar o significado do texto.",
+      "limits": "Padrão descritivo, sem confirmar leucoplasia ou excluir outras alterações.",
+      "kind": "descriptive"
+    },
+    {
+      "id": "red_persistent",
+      "label": "Alteração vermelha ou vermelho-branca persistente",
+      "rule": "red_pattern",
+      "required": {
+        "color": [
+          "reported"
+        ],
+        "duration": [
+          "reported"
+        ]
+      },
+      "criteria": "Cor vermelha ou vermelho-branca explícita e relato que estabeleça persistência, levando em conta duração e evolução. Uma duração de horas, um dado desconhecido ou a cor sozinha não estabelece persistência.",
+      "limits": "Padrão descritivo, sem confirmar eritroplasia ou câncer; não inventar limiar temporal universal.",
+      "kind": "descriptive"
+    },
+    {
+      "id": "persistent_ulcer",
+      "label": "Ulceração persistente",
+      "rule": "ulcer_pattern",
+      "required": {
+        "ulceration": [
+          "reported"
+        ],
+        "duration": [
+          "reported"
+        ]
+      },
+      "criteria": "Ulceração presente, e não apenas erosão, e relato explícito que estabeleça persistência. Preservar contexto e evolução; não assumir persistência a partir de palavra isolada ou duração desconhecida.",
+      "limits": "Padrão descritivo que não identifica etiologia ou malignidade.",
+      "kind": "descriptive"
+    },
+    {
+      "id": "lichenoid_pattern",
+      "label": "Alteração de padrão liquenoide",
+      "rule": "lichenoid_context",
+      "required": {
+        "color": [
+          "reported"
+        ],
+        "reticular_pattern": [
+          "reported"
+        ],
+        "distribution": [
+          "reported"
+        ],
+        "medication_timing": [
+          "reported",
+          "absent"
+        ],
+        "contact_relation": [
+          "reported",
+          "absent"
+        ]
+      },
+      "criteria": "Estrias ou rede branca reticular explicitamente presentes, com distribuição e simetria registradas; o padrão precisa ser coerente com o conjunto. Relações com medicamento/substância e contato local devem ter sido avaliadas e devem constar na razão, sem determinar causa. Não usar uma placa branca isolada ou coloração branca como prova de padrão liquenoide.",
+      "limits": "Pode incluir líquen plano ou outras alterações liquenoides, mas não os distingue. Confirmação requer correlação clínica e histopatológica. Não aplicar critérios de displasia discordantes nem criar diagnóstico definitivo.",
+      "kind": "descriptive"
+    },
+    {
+      "id": "oral_lichen_planus",
+      "label": "Líquen plano oral",
+      "rule": "lichen_hypothesis",
+      "required": {},
+      "criteria": "Estrias brancas entrelaçadas ou padrão em rede explicitamente presentes, coerentes com o exame. Bilateralidade e simetria favorecem a hipótese quando informadas; unilateralidade não a confirma e deve motivar comparação com lesão liquenoide. Áreas atróficas ou erosivas podem coexistir. Medicamentos e contatos desconhecidos LIMITAM a distinção, mas não impedem a hipótese. Não sugerir a partir de placa branca, vermelhidão ou erosão isoladas. A morfologia característica pode estar registrada no campo específico ou na descrição do exame, superfície ou textura; não exigir duplicação do mesmo achado em outro campo.",
+      "limits": "Hipótese clínica. Explicar os dados que a favorecem e limitações; requer avaliação estomatológica e correlação clinicopatológica.",
+      "kind": "hypothesis",
+      "required_any": [
+        [
+          "reticular_pattern",
+          "intraoral",
+          "surface",
+          "texture"
+        ]
+      ]
+    },
+    {
+      "id": "lichenoid_contact",
+      "label": "Reação liquenoide de contato",
+      "rule": "lichenoid_differential",
+      "required": {
+        "contact_relation": [
+          "reported"
+        ]
+      },
+      "criteria": "Padrão reticular/liquenoide realmente presente e relação anatômica explícita com material restaurador ou substância em contato. Unilateralidade e correspondência topográfica favorecem essa possibilidade. A mera presença de restauração em outra região não a sustenta. Pode coexistir como diferencial de líquen plano; contato não demonstra causa. A morfologia característica pode estar registrada no campo específico ou na descrição do exame, superfície ou textura; não exigir duplicação do mesmo achado em outro campo.",
+      "limits": "Não recomendar troca de restauração ou remoção de material. Relação causal requer avaliação profissional.",
+      "kind": "hypothesis",
+      "required_any": [
+        [
+          "reticular_pattern",
+          "intraoral",
+          "surface",
+          "texture"
+        ]
+      ]
+    },
+    {
+      "id": "lichenoid_drug",
+      "label": "Reação liquenoide associada a medicamento",
+      "rule": "lichenoid_differential",
+      "required": {
+        "medication_timing": [
+          "reported"
+        ]
+      },
+      "criteria": "Padrão reticular/liquenoide presente e sequência temporal explícita entre início da medicação e alteração. Uso de qualquer medicamento, sem relação temporal documentada, NÃO sustenta esta hipótese específica. Comparar com líquen plano sem afirmar causa. A morfologia característica pode estar registrada no campo específico ou na descrição do exame, superfície ou textura; não exigir duplicação do mesmo achado em outro campo.",
+      "limits": "Não recomendar interrupção ou troca de medicamentos. Relação causal não está confirmada.",
+      "kind": "hypothesis",
+      "required_any": [
+        [
+          "reticular_pattern",
+          "intraoral",
+          "surface",
+          "texture"
+        ]
+      ]
+    },
+    {
+      "id": "leukoplakia",
+      "label": "Leucoplasia oral",
+      "rule": "leukoplakia_hypothesis",
+      "required": {
+        "color": [
+          "reported"
+        ],
+        "scraping": [
+          "reported",
+          "absent"
+        ],
+        "duration": [
+          "reported"
+        ]
+      },
+      "criteria": "Placa predominantemente branca, persistente e explicitamente não removível. Considerar a hipótese apenas se o conjunto não for melhor explicado por estrias reticulares clássicas ou por contato mecânico claramente correspondente. Falta de avaliação de outra causa deve ser explicada como limitação da hipótese, nunca como exclusão feita. Não concluir displasia.",
+      "limits": "Designação clínica por exclusão; a hipótese não equivale à confirmação de leucoplasia, displasia ou câncer.",
+      "kind": "hypothesis"
+    },
+    {
+      "id": "erythroplakia",
+      "label": "Eritroplasia oral",
+      "rule": "erythroplakia_hypothesis",
+      "required": {
+        "color": [
+          "reported"
+        ],
+        "surface": [
+          "reported"
+        ],
+        "duration": [
+          "reported"
+        ]
+      },
+      "criteria": "Área predominantemente vermelha, persistente, com superfície aveludada ou granular explicitamente descrita, coerente com a delimitação e exame. Diferenciar de inflamação, trauma e formas atróficas de líquen; cor vermelha isolada ou qualquer superfície lisa NÃO basta.",
+      "limits": "Hipótese que depende de avaliação e exclusão de outras causas. A aparência não confirma histologia.",
+      "kind": "hypothesis"
+    },
+    {
+      "id": "squamous_carcinoma",
+      "label": "Carcinoma espinocelular oral",
+      "rule": "neoplastic_hypothesis",
+      "required": {
+        "duration": [
+          "reported"
+        ]
+      },
+      "criteria": "Conjunto coerente que motive investigar neoplasia: persistência/progressão acompanhada de ulceração persistente e/ou endurecimento/infiltração explicitamente positivos. Registrar os campos positivos que sustentam o conjunto; cor, duração, localização ou hábitos isolados não bastam. Achados inespecíficos NÃO tornam esta a hipótese mais provável automaticamente. Ausência de tabaco não exclui.",
+      "limits": "Possibilidade a investigar, não confirmação de malignidade. Não atribuir estágio, probabilidade ou afirmar câncer; avaliação estomatológica e histopatologia quando indicada.",
+      "kind": "hypothesis"
+    },
+    {
+      "id": "traumatic_ulcer",
+      "label": "Ulceração traumática",
+      "rule": "traumatic_hypothesis",
+      "required": {
+        "ulceration": [
+          "reported"
+        ],
+        "trauma": [
+          "reported"
+        ]
+      },
+      "criteria": "Úlcera realmente presente e contato mecânico explicitamente correspondente ao local, com história/evolução coerentes. Trauma desconhecido ou ausência de contato não sustenta. Persistência, crescimento ou endurecimento exigem investigar outras possibilidades; não afastar neoplasia por encontrar trauma.",
+      "limits": "Hipótese de causa local; sem recomendar tratamento de teste nem período obrigatório de espera.",
+      "kind": "hypothesis"
+    }
   ],
   "attention_sources": {
-    "ulceration":["ulcer_pattern","suspicious_referral"],
-    "induration":["description","suspicious_referral"],
-    "bleeding":["description","referral_record"],
-    "color":["white_pattern","red_pattern"],
-    "evolution":["description","persistent_referral"],
-    "borders":["description"],
-    "nodes":["examination","referral_record"]
+    "ulceration": [
+      "ulcer_pattern",
+      "suspicious_referral"
+    ],
+    "induration": [
+      "description",
+      "suspicious_referral"
+    ],
+    "bleeding": [
+      "description",
+      "referral_record"
+    ],
+    "color": [
+      "white_pattern",
+      "red_pattern"
+    ],
+    "evolution": [
+      "description",
+      "persistent_referral"
+    ],
+    "borders": [
+      "description"
+    ],
+    "nodes": [
+      "examination",
+      "referral_record"
+    ]
   },
-  "attention_limits":"Os sete descritores de atenção preservados da regra original não constituem um escore validado. Sangramento e bordas pouco definidas são registrados e contextualizados; não atribuir categoria de risco ou urgência automática. A suspeita informada pelo profissional é tratada separadamente."
+  "attention_limits": "Os sete descritores de atenção preservados da regra original não constituem um escore validado. Sangramento e bordas pouco definidas são registrados e contextualizados; não atribuir categoria de risco ou urgência automática. A suspeita informada pelo profissional é tratada separadamente."
 }

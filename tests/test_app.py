@@ -103,7 +103,7 @@ def test_catalog_provenance():
  assert len(data['gallery'])==16 and len(data['references'])==9
  assert all(x['ai_generated'] for x in data['gallery'])
  assert 'confirm the nature of an alteration' in main.RULES.lower()
- assert len(data['evidence']['references'])==9 and data['build']['clinical_rules_version']=='alia-evidence-1.0'
+ assert len(data['evidence']['references'])==9 and data['build']['clinical_rules_version']=='alia-evidence-2.0'
  assert len({k for k,_,_ in FIELDS})==len(FIELDS)
 
 def test_translation_failure_not_partial(client,monkeypatch):
@@ -203,7 +203,7 @@ def test_optional_gallery_and_chat_continuation(client,monkeypatch,choice):
  case=client.post('/api/cases/'+case['id']+'/chat',json={'version':case['version'],'message':'Corrijo: não relata dor'}).json()
  assert case['facts']['pain']=='Sem dor relatada'
  assert case['assessment']['status']=='insufficient'
- assert case['flow']['stage']=='services_offer'
+ assert case['flow']['stage']=='done'
 
 def complete_case(client):
  case=new(client)
@@ -216,39 +216,33 @@ def mock_reply(monkeypatch,**fields):
  async def fake(messages,schema):return {'updates':[],'explanation':'',**fields}
  install_model(monkeypatch,fake)
 
-def test_services_before_referral(client,monkeypatch):
+def test_final_actions_are_available_without_consent_questions(client,monkeypatch):
  case=complete_case(client);mock_reply(monkeypatch,assessment_status='insufficient')
  case=conversation(client,case,'Sintetize')
- assert case['flow']['stage']=='services_offer' and not case['flow']['referral_ready']
- assert 'localizar' in case['history'][-1]['content']
- assert client.post('/api/cases/'+case['id']+'/referral-data',json={}).status_code==409
- mock_reply(monkeypatch,action='yes');case=conversation(client,case,'Sim')
- assert case['flow']['stage']=='city'
- mock_reply(monkeypatch,location='Curitiba');case=conversation(client,case,'Curitiba')
- assert case['flow']['stage']=='country'
- mock_reply(monkeypatch,location='Brasil');case=conversation(client,case,'Brasil')
- assert case['flow']['maps_ready'] and case['flow']['stage']=='referral_offer'
- assert not case['flow']['referral_ready'] and 'encaminhamento' in case['history'][-1]['content']
- mock_reply(monkeypatch,action='yes');case=conversation(client,case,'Quero preparar o encaminhamento')
- assert case['flow']['referral_ready'] and case['flow']['stage']=='done'
- assert client.post('/api/cases/'+case['id']+'/referral-data',json={}).status_code==409
+ assert case['flow']=={'stage':'done','referral_ready':True,'actions_ready':True}
+ assert 'Deseja' not in case['history'][-1]['content']
+ assert 'localizar' not in case['history'][-1]['content']
+ assert client.post('/api/cases/'+case['id']+'/referral-data').status_code==409
  case=review(client,case)
- assert client.post('/api/cases/'+case['id']+'/referral-data',json={}).status_code==200
- assert 'city' not in case['facts'] and 'country' not in case['facts']
+ assert client.post('/api/cases/'+case['id']+'/referral-data').status_code==200
 
-def test_declined_services_still_offers_referral(client,monkeypatch):
+def test_no_match_keeps_both_actions_available(client,monkeypatch):
  case=complete_case(client);mock_reply(monkeypatch,assessment_status='no_match')
  case=conversation(client,case,'Revisar')
- mock_reply(monkeypatch,action='no');case=conversation(client,case,'Não quero localizar serviços')
- assert case['flow']['stage']=='referral_offer' and not case['flow'].get('maps_ready')
- case=conversation(client,case,'Não quero encaminhamento')
- assert case['flow']['stage']=='done' and not case['flow']['referral_ready']
+ assert case['flow']['actions_ready'] and case['flow']['referral_ready']
+ assert 'não exclui' in case['assessment']['text']
+ mock_reply(monkeypatch,action='no')
+ case=conversation(client,case,'Não quero localizar serviços')
+ assert case['flow']['stage']=='done' and case['flow']['referral_ready']
+ assert '?' not in case['history'][-1]['content']
 
-def test_cancel_location_still_offers_referral(client,monkeypatch):
+def test_synthesis_does_not_collect_location_in_conversation(client,monkeypatch):
  case=complete_case(client);mock_reply(monkeypatch,assessment_status='insufficient')
- case=conversation(client,case,'Revisar');mock_reply(monkeypatch,action='yes');case=conversation(client,case,'Sim')
- mock_reply(monkeypatch,action='no');case=conversation(client,case,'Não quero informar cidade')
- assert case['flow']['stage']=='referral_offer' and not case['flow'].get('city')
+ case=conversation(client,case,'Revisar')
+ mock_reply(monkeypatch,location='Curitiba')
+ case=conversation(client,case,'Curitiba')
+ assert case['flow']['stage']=='done' and 'city' not in case['flow']
+ assert 'city' not in case['facts']
 
 def test_compatibility_requires_source_and_stated_support(client,monkeypatch):
  case=complete_case(client)
@@ -256,7 +250,7 @@ def test_compatibility_requires_source_and_stated_support(client,monkeypatch):
  candidate={'pattern_id':'white_nonremovable','label':main.PATTERN_BY_ID['white_nonremovable']['label'],'reason':'Coloração branca não removível informada.','supporting_keys':['color','scraping'],'basis_excerpt':main.RULE_BY_ID['white_pattern']['text']}
  mock_reply(monkeypatch,assessment_status='compatible',possibilities=[candidate])
  case=conversation(client,case,'Sintetize')
- assert case['assessment']['status']=='compatible' and 'não identificar uma condição específica' in case['assessment']['text']
+ assert case['assessment']['status']=='compatible' and 'padrões descritivos' in case['assessment']['text']
  case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{'color':'Não informado'}}).json()
  assert not case['assessment'] and not case['flow']['referral_ready']
  case=conversation(client,case,'Revisar')
@@ -269,7 +263,7 @@ def test_unsupported_compatibility_and_early_summary(client,monkeypatch):
  case=conversation(client,case,'Quero encaminhar sem completar')
  assert case['pending']=='sex' and case['assessment']['status']=='validation_failed'
  assert 'Invented lesion' not in case['history'][-1]['content']
- assert case['flow']['stage']=='services_offer'
+ assert case['flow']['stage']=='done'
 
 def test_collection_question_answer_and_strict_schema(client,monkeypatch):
  case=new(client)
@@ -368,7 +362,7 @@ def test_free_question_after_synthesis_is_answered_without_restarting(client,mon
  mock_reply(monkeypatch,is_question=True,explanation='A ausência de uma correspondência não exclui uma alteração que precise de investigação.')
  case=conversation(client,case,'Isso exclui doença?')
  assert 'não exclui' in case['history'][-1]['content']
- assert case['flow']['stage']=='services_offer'
+ assert case['flow']['stage']=='done'
 
 
 def test_pipeline_separates_collection_and_synthesis_and_rejects_unverified_claim(client,monkeypatch):
@@ -567,8 +561,8 @@ def test_internal_matching_reason_is_not_the_final_conclusion(client,monkeypatch
  case=conversation(client,case,'Sintetize')
  text=case['history'][-1]['content']
  assert 'Preenchendo os critérios' not in text
- assert 'não identificar uma condição específica' in text
- assert 'avaliação presencial' in text
+ assert 'padrões descritivos' in text
+ assert 'avaliação por um estomatologista' in text
  assert 'podem ser compatíveis com as seguintes possibilidades' not in text
 
 def test_none_medications_is_recorded_and_advances_without_model(client,monkeypatch):
@@ -617,3 +611,91 @@ def test_guest_access_needs_no_example_and_does_not_save_history():
   assert db.execute('SELECT count(*) FROM cases WHERE id=?',(case['id'],)).fetchone()[0]==0
  c.post('/api/logout')
  assert c.get('/api/cases/'+case['id']).status_code==401
+
+
+def named_candidate(id,keys,reason):
+ return {'pattern_id':id,'label':'','basis_excerpt':'','supporting_keys':keys,'reason':reason}
+
+def test_lichen_planus_named_with_unknown_contact_and_medication_context(client,monkeypatch):
+ case=new(client)
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{'reticular_pattern':'Estrias brancas entrelaçadas em rede','distribution':'Bilateral e simétrica em mucosa jugal','medication_timing':'Não informado','contact_relation':'Não avaliado'}}).json()
+ assert 'lichenoid' in case['contexts']
+ mock_reply(monkeypatch,action='summarize',assessment_status='compatible',possibilities=[named_candidate('oral_lichen_planus',['reticular_pattern','distribution'],'Estrias brancas em rede com distribuição bilateral e simétrica favorecem essa possibilidade; o contexto de medicamentos e contato ainda precisa ser esclarecido.')])
+ case=conversation(client,case,'Sintetize')
+ assert [x['label'] for x in case['assessment']['possibilities']]==['Líquen plano oral']
+ assert 'Líquen plano oral:' in case['history'][-1]['content']
+ assert 'estomatologista' in case['history'][-1]['content']
+ assert 'não uma confirmação' in case['history'][-1]['content']
+ assert 'Deseja' not in case['history'][-1]['content']
+ assert case['assessment']['possibilities'][0]['sources'][0]['pdf_pages']==['4–9, 15–21']
+
+def test_two_supported_lichenoid_possibilities_are_presented(client,monkeypatch):
+ case=new(client)
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{'reticular_pattern':'Estrias reticulares brancas','distribution':'Unilateral em mucosa jugal direita','contact_relation':'Correspondem ao contato direto com restauração de amálgama'}}).json()
+ mock_reply(monkeypatch,action='summarize',assessment_status='compatible',possibilities=[named_candidate('oral_lichen_planus',['reticular_pattern'],'O padrão reticular permite considerar essa hipótese, embora a distribuição unilateral exija comparação com outras alterações.'),named_candidate('lichenoid_contact',['reticular_pattern','contact_relation'],'A correspondência com o contato local permite considerar reação liquenoide, sem confirmar causa.')])
+ case=conversation(client,case,'Sintetize')
+ assert len(case['assessment']['possibilities'])==2
+ assert 'Líquen plano oral:' in case['assessment']['text'] and 'Reação liquenoide de contato:' in case['assessment']['text']
+
+def test_unknown_context_does_not_prove_specific_contact_or_drug_reaction(client,monkeypatch):
+ case=new(client)
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{'reticular_pattern':'Estrias brancas em rede','contact_relation':'Não informado','medication_timing':'Não avaliado'}}).json()
+ mock_reply(monkeypatch,action='summarize',assessment_status='compatible',possibilities=[named_candidate('lichenoid_contact',['reticular_pattern','contact_relation'],'Contact'),named_candidate('lichenoid_drug',['reticular_pattern','medication_timing'],'Drug')])
+ case=conversation(client,case,'Sintetize')
+ assert not case['assessment']['possibilities']
+
+def test_lichen_cannot_be_suggested_from_white_color_alone(client,monkeypatch):
+ case=new(client)
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{'color':'Branca','reticular_pattern':'Não informado'}}).json()
+ mock_reply(monkeypatch,action='summarize',assessment_status='compatible',possibilities=[named_candidate('oral_lichen_planus',['color','reticular_pattern'],'White')])
+ case=conversation(client,case,'Sintetize')
+ assert not case['assessment']['possibilities']
+
+def test_neoplasia_candidate_requires_more_than_color_and_duration(client,monkeypatch):
+ case=new(client)
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{'color':'Vermelha','duration':'Três meses'}}).json()
+ mock_reply(monkeypatch,action='summarize',assessment_status='compatible',possibilities=[named_candidate('squamous_carcinoma',['color','duration'],'Red')])
+ case=conversation(client,case,'Sintetize')
+ assert not case['assessment']['possibilities']
+
+def test_named_hypothesis_semantic_rejection_remains_effective(client,monkeypatch):
+ case=new(client)
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{'reticular_pattern':'Ausência de estrias reticulares'}}).json()
+ async def fake(messages,schema):
+  data=json.loads(messages[-1]['content'])
+  if data['task']=='verify':return {'valid_indices':[]}
+  return {'updates':[],'explanation':'','action':'summarize','assessment_status':'compatible','possibilities':[named_candidate('oral_lichen_planus',['reticular_pattern'],'Unsupported')]}
+ monkeypatch.setattr(main,'model',fake)
+ case=conversation(client,case,'Sintetize')
+ assert not case['assessment']['possibilities'] and 'Líquen plano oral' not in case['history'][-1]['content']
+
+def test_named_hypothesis_replaces_redundant_generic_pattern(client,monkeypatch):
+ case=new(client)
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{'reticular_pattern':'Estrias brancas reticulares','color':'Branca','scraping':'Não removível'}}).json()
+ mock_reply(monkeypatch,action='summarize',assessment_status='compatible',possibilities=[named_candidate('oral_lichen_planus',['reticular_pattern'],'Estrias em rede.'),named_candidate('white_nonremovable',['color','scraping'],'Branca.')])
+ case=conversation(client,case,'Sintetize')
+ assert [x['pattern_id'] for x in case['assessment']['possibilities']]==['oral_lichen_planus']
+
+def test_corrections_invalidate_final_buttons_and_review(client,monkeypatch):
+ case=complete_case(client);mock_reply(monkeypatch,assessment_status='insufficient')
+ case=conversation(client,case,'Sintetize');case=review(client,case)
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{'color':'Branca'}}).json()
+ assert not case['assessment'] and not case['flow']['referral_ready'] and case['review'] is None
+ assert client.post('/api/cases/'+case['id']+'/referral-data').status_code==409
+
+
+def test_lichen_morphology_can_be_recorded_in_intraoral_exam(client,monkeypatch):
+ case=new(client)
+ case=client.patch('/api/cases/'+case['id'],json={'version':case['version'],'facts':{'intraoral':'Estrias brancas entrelaçadas em rede, bilateralmente na mucosa jugal'}}).json()
+ assert 'lichenoid' in case['contexts'] and 'reticular_pattern' in case['active_fields']
+ mock_reply(monkeypatch,action='summarize',assessment_status='compatible',possibilities=[named_candidate('oral_lichen_planus',['intraoral'],'O padrão de estrias descrito no exame permite considerar essa possibilidade.')])
+ case=conversation(client,case,'Sintetize')
+ assert case['assessment']['possibilities'][0]['label']=='Líquen plano oral'
+
+
+def test_final_prose_cannot_reintroduce_action_questions(client,monkeypatch):
+ case=complete_case(client)
+ mock_reply(monkeypatch,assessment_status='insufficient',explanation='Os dados ainda são limitados. Deseja gerar um relatório? Deseja procurar profissionais?')
+ case=conversation(client,case,'Sintetize')
+ assert 'Os dados ainda são limitados.' in case['assessment']['text']
+ assert '?' not in case['history'][-1]['content'] and 'Deseja' not in case['history'][-1]['content']
